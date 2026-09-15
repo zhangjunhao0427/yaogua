@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-restricted-properties": [
+      "error",
+      { "object": "Math", "property": "random", "message": "随机数一律经 src/core/random.ts（crypto.getRandomValues）" }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          { "name": "react-router-dom", "importNames": ["BrowserRouter", "createBrowserRouter"], "message": "只用 HashRouter：Capacitor 从 file:// 加载" },
+          { "name": "react-router", "importNames": ["BrowserRouter", "createBrowserRouter"], "message": "只用 HashRouter：Capacitor 从 file:// 加载" }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/core/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["react", "react-*", "**/platform/**", "**/ui/**", "**/data/**"], "message": "core 须为纯逻辑，不得依赖 UI、平台层或数据" }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
