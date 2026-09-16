@@ -60,6 +60,56 @@ export function reflectionPrompts(
   return prompts;
 }
 
+export type PerspectiveKey = 'base' | 'changed' | 'mutual' | 'opposite' | 'reversed';
+
+export interface Perspective {
+  readonly key: PerspectiveKey;
+  readonly label: string;
+  /** 一句话定位 */
+  readonly role: string;
+  /** 怎么来的、代表什么 */
+  readonly meaning: string;
+}
+
+export const PERSPECTIVES: readonly Perspective[] = [
+  {
+    key: 'base',
+    label: '本卦',
+    role: '当下处境',
+    meaning: '六次摇卦直接得到的卦，是你此刻实际所处的局面，也是这一卦的起点。',
+  },
+  {
+    key: 'changed',
+    label: '之卦',
+    role: '事情的走向',
+    meaning: '把变爻的阴阳翻转得到的卦，顺着眼下这样走下去会变成的样子。没有变爻就没有之卦，说明局面一时不会动。',
+  },
+  {
+    key: 'mutual',
+    label: '互卦',
+    role: '中间过程',
+    meaning: '取本卦的二、三、四爻作下卦，三、四、五爻作上卦。它藏在本卦里，代表从现在走到结果之间真正起作用的那一段，也常指外面看不见的内情。',
+  },
+  {
+    key: 'opposite',
+    label: '错卦',
+    role: '事情的反面',
+    meaning: '六爻阴阳全部相反的卦。它是你没看到的那一面，也可以看作立场与你相对的一方所处的位置。',
+  },
+  {
+    key: 'reversed',
+    label: '综卦',
+    role: '换位来看',
+    meaning: '把整个卦上下颠倒过来，是同一件事在对方眼里的样子。乾、坤、坎、离、颐、大过、中孚、小过这八个卦颠倒后还是自己，遇到它们，双方看到的是同一幅局面。',
+  },
+];
+
+export function perspective(key: PerspectiveKey): Perspective {
+  const found = PERSPECTIVES.find((p) => p.key === key);
+  if (!found) throw new Error(`没有这个视角：${key}`);
+  return found;
+}
+
 /** 常见断辞释义，按出现先后展示 */
 export const GLOSSARY: readonly (readonly [term: string, meaning: string])[] = [
   ['元亨', '大为亨通'],

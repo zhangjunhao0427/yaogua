@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  aspectsOf,
   castFromValues,
   flipLines,
   hexagramByNumber,
@@ -8,6 +9,8 @@ import {
   KING_WEN,
   LINE_INDICES,
   lineTitle,
+  oppositeLines,
+  reversedLines,
   sixOf,
   TRIGRAM,
   trigramOf,
@@ -101,6 +104,46 @@ describe('之卦', () => {
     expect(cast.base.number).toBe(63);
     expect(cast.changing).toEqual([]);
     expect(cast.changed).toBeNull();
+  });
+});
+
+describe('互卦、错卦、综卦', () => {
+  const aspects = (bits: string) => aspectsOf(hexagramOf(fromBits(bits)));
+
+  it('水雷屯：互卦为剥、错卦为鼎、综卦为蒙', () => {
+    const { mutual, opposite, reversed } = aspects('100010');
+    expect(mutual.number).toBe(23);
+    expect(opposite.number).toBe(50);
+    expect(reversed.number).toBe(4);
+  });
+
+  it('乾：互卦仍为乾、错卦为坤、综卦仍为乾', () => {
+    const { mutual, opposite, reversed } = aspects('111111');
+    expect([mutual.number, opposite.number, reversed.number]).toEqual([1, 2, 1]);
+  });
+
+  it('互卦取的是二三四爻与三四五爻', () => {
+    // 地天泰：二三四爻得兑、三四五爻得震，互卦为雷泽归妹
+    expect(aspects('111000').mutual.number).toBe(54);
+    // 山水蒙：二三四爻得震、三四五爻得坤，互卦为地雷复
+    expect(aspects('010001').mutual.number).toBe(24);
+  });
+
+  it('错卦、综卦各自成对，两次变换回到原卦', () => {
+    for (let n = 1; n <= 64; n++) {
+      const h = hexagramByNumber(n);
+      const { opposite, reversed } = aspectsOf(h);
+      expect(hexagramOf(oppositeLines(opposite.yang)).number).toBe(n);
+      expect(hexagramOf(reversedLines(reversed.yang)).number).toBe(n);
+      expect(opposite.number).not.toBe(n);
+    }
+  });
+
+  it('乾坤坎离颐大过中孚小过八卦颠倒后仍是自己', () => {
+    const selfReversed = Array.from({ length: 64 }, (_, i) => i + 1).filter(
+      (n) => aspectsOf(hexagramByNumber(n)).reversed.number === n,
+    );
+    expect(selfReversed).toEqual([1, 2, 27, 28, 29, 30, 61, 62]);
   });
 });
 

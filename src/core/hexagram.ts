@@ -66,6 +66,36 @@ export function flipLines(yang: SixOf<boolean>, indices: readonly LineIndex[]): 
   return sixOf((i) => (indices.includes(i) ? !yang[i] : yang[i]));
 }
 
+/** 互卦：取二、三、四爻为下卦，三、四、五爻为上卦 */
+export function mutualLines(yang: SixOf<boolean>): SixOf<boolean> {
+  return sixOf((i) => yang[i < 3 ? i + 1 : i - 1]);
+}
+
+/** 错卦：六爻阴阳全部相反 */
+export function oppositeLines(yang: SixOf<boolean>): SixOf<boolean> {
+  return sixOf((i) => !yang[i]);
+}
+
+/** 综卦：把卦上下颠倒过来看 */
+export function reversedLines(yang: SixOf<boolean>): SixOf<boolean> {
+  return sixOf((i) => yang[5 - i]);
+}
+
+export interface Aspects {
+  readonly mutual: Hexagram;
+  readonly opposite: Hexagram;
+  readonly reversed: Hexagram;
+}
+
+/** 本卦之外的三个角度：互卦、错卦、综卦 */
+export function aspectsOf(h: Hexagram): Aspects {
+  return {
+    mutual: hexagramOf(mutualLines(h.yang)),
+    opposite: hexagramOf(oppositeLines(h.yang)),
+    reversed: hexagramOf(reversedLines(h.yang)),
+  };
+}
+
 /** 由六次摇卦所得成卦：本卦、之卦、变爻位 */
 export function castFromValues(values: SixOf<LineValue>): Cast {
   const changing = LINE_INDICES.filter((i) => isChanging(values[i]));

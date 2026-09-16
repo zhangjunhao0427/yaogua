@@ -1,3 +1,4 @@
+import { PERSPECTIVES } from '../../data/guide';
 import { Screen } from '../components/Screen';
 
 const COIN_ROWS = [
@@ -50,10 +51,29 @@ export function AboutPage() {
         </section>
 
         <section>
-          <h2>本卦与之卦</h2>
-          <p>
-            六爻所成的是本卦。把其中的变爻（老阳、老阴）阴阳翻转，其余不动，得到之卦，表示事情变化的方向。没有变爻，就没有之卦。
-          </p>
+          <h2>五个角度</h2>
+          <p>同一次摇卦，可以从几个角度去看同一件事：</p>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>卦</th>
+                <th>代表什么</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PERSPECTIVES.map((p) => (
+                <tr key={p.key}>
+                  <td>
+                    {p.label}
+                    <br />
+                    <span className="muted">{p.role}</span>
+                  </td>
+                  <td>{p.meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p>解读页只以本卦和之卦断吉凶，互卦、错卦、综卦是补充的视角，不改变判定。</p>
         </section>
 
         <section>

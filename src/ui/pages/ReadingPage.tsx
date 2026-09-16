@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { lineTitle } from '../../core/hexagram';
+import { aspectsOf, lineTitle } from '../../core/hexagram';
 import { judge } from '../../core/rules';
 import type { Cast, Hexagram } from '../../core/types';
-import { CATEGORIES, glossaryFor, reflectionPrompts } from '../../data/guide';
+import { CATEGORIES, glossaryFor, perspective, reflectionPrompts, type PerspectiveKey } from '../../data/guide';
 import { hexagramFullName, hexagramName } from '../../data/hexagrams';
 import { hexagramText, resolveText, type ResolvedText } from '../../data/zhouyi';
 import { sharer } from '../../platform/share';
@@ -97,13 +97,13 @@ function Reading({
 
       <Layer n={1} sectionRef={refFor(1)}>
         <div className="figures">
-          <Figure caption="本卦" hexagram={cast.base} changing={cast.changing} />
+          <Figure perspectiveKey="base" hexagram={cast.base} changing={cast.changing} />
           {cast.changed && (
             <>
               <span className="figures__arrow" aria-hidden="true">
                 之
               </span>
-              <Figure caption="之卦" hexagram={cast.changed} changing={[]} />
+              <Figure perspectiveKey="changed" hexagram={cast.changed} changing={[]} />
             </>
           )}
         </div>
@@ -112,6 +112,7 @@ function Reading({
             ? `变爻：${cast.changing.map((i) => lineTitle(i, cast.base.yang[i])).join('、')}　○ 老阳　× 老阴`
             : '六爻皆不变，没有之卦'}
         </p>
+        <Aspects base={cast.base} />
       </Layer>
 
       {depth >= 2 && (
@@ -202,24 +203,67 @@ function Layer({
 }
 
 function Figure({
-  caption,
+  perspectiveKey,
   hexagram,
   changing,
 }: {
-  caption: string;
+  perspectiveKey: PerspectiveKey;
   hexagram: Hexagram;
   changing: readonly number[];
 }) {
+  const { label, role } = perspective(perspectiveKey);
   const name = hexagramFullName(hexagram.number);
   return (
     <figure className="figure">
-      <span className="figure__caption">{caption}</span>
-      <HexagramFigure yang={hexagram.yang} changing={changing} label={`${caption}${name}`} />
+      <span className="figure__caption">
+        {label} · {role}
+      </span>
+      <HexagramFigure yang={hexagram.yang} changing={changing} label={`${label}${name}`} />
       <figcaption className="figure__text">
         <span className="figure__name serif">{name}</span>
         <span className="figure__theme">{hexagramText(hexagram.number).theme}</span>
       </figcaption>
     </figure>
+  );
+}
+
+/** 互卦、错卦、综卦：同一卦的另外三个角度 */
+function Aspects({ base }: { base: Hexagram }) {
+  const { mutual, opposite, reversed } = aspectsOf(base);
+  const items = [
+    ['mutual', mutual],
+    ['opposite', opposite],
+    ['reversed', reversed],
+  ] as const;
+
+  return (
+    <details className="aspects">
+      <summary>互卦 · 错卦 · 综卦：再换三个角度看</summary>
+      <ul className="aspects__list">
+        {items.map(([key, hexagram]) => {
+          const { label, role, meaning } = perspective(key);
+          return (
+            <li key={key} className="aspect">
+              <HexagramFigure yang={hexagram.yang} size="sm" />
+              <div className="aspect__body">
+                <p className="aspect__head">
+                  <strong>{label}</strong>
+                  <span className="muted"> · {role}</span>
+                </p>
+                <p className="aspect__name serif">
+                  {hexagramFullName(hexagram.number)}
+                  <span className="muted">　{hexagramText(hexagram.number).theme}</span>
+                </p>
+                <p className="small muted">
+                  {meaning}
+                  {hexagram.number === base.number && '　这一卦与本卦相同。'}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   );
 }
 

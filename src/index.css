@@ -792,6 +792,39 @@ a {
   color: var(--muted);
   font-family: var(--serif);
 }
+.aspects summary {
+  color: var(--ink-2);
+  font-size: 14px;
+  cursor: pointer;
+}
+.aspects__list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 14px;
+}
+.aspect {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.aspect > .hexagram {
+  margin-top: 4px;
+}
+.aspect__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.aspect__head strong {
+  font-weight: 600;
+}
+.aspect__name {
+  font-size: 17px;
+}
+
 .verdict {
   font-size: 19px;
   line-height: 1.8;
