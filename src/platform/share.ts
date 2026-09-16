@@ -13,9 +13,21 @@ export type ShareResult = 'shared' | 'copied' | 'cancelled' | 'failed';
 
 export interface Sharer {
   share(content: ShareContent): Promise<ShareResult>;
+  /** 分享图片；环境不支持分享文件时返回 'unsupported'，由界面改为展示图片供保存 */
+  shareImage(image: Blob, fileName: string, content: ShareContent): Promise<ShareResult | 'unsupported'>;
 }
 
 export const webSharer: Sharer = {
+  async shareImage(image, fileName, content) {
+    const file = new File([image], fileName, { type: image.type });
+    if (typeof navigator === 'undefined' || !navigator.canShare?.({ files: [file] })) return 'unsupported';
+    try {
+      await navigator.share({ files: [file], title: content.title, text: content.text });
+      return 'shared';
+    } catch (e) {
+      return e instanceof DOMException && e.name === 'AbortError' ? 'cancelled' : 'failed';
+    }
+  },
   async share(content) {
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {

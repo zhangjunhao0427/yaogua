@@ -3,6 +3,8 @@
  */
 
 export interface Motion {
+  /** 设备是否可能有运动传感器（桌面浏览器返回 false） */
+  isSupported(): boolean;
   /** iOS 13+ 须在用户手势回调内调用 */
   requestPermission(): Promise<boolean>;
   /** 监听摇动，返回取消监听的函数 */
@@ -35,6 +37,13 @@ interface PermissionGated {
 }
 
 export const webMotion: Motion = {
+  isSupported() {
+    return (
+      typeof window !== 'undefined' &&
+      typeof DeviceMotionEvent !== 'undefined' &&
+      (navigator.maxTouchPoints > 0 || 'ontouchstart' in window)
+    );
+  },
   async requestPermission() {
     if (typeof DeviceMotionEvent === 'undefined') return false;
     const ctor = DeviceMotionEvent as unknown as PermissionGated;
