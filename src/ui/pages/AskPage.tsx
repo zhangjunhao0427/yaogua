@@ -13,7 +13,7 @@ export function AskPage() {
   const draft = useLoad(() => recordStore.loadDraft(), []);
   const [question, setQuestion] = useState('');
   const [category, setCategory] = useState<Category | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<{ field: 'category' | 'question'; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -23,11 +23,10 @@ export function AskPage() {
   }, [draft, navigate]);
 
   function pick(info: CategoryInfo) {
-    setCategory((current) => (current === info.id ? null : info.id));
-    if (!question.trim()) {
-      setQuestion(info.starter);
-      setError('');
-    }
+    // 分类必选，点击只切换到该项，不取消
+    setCategory(info.id);
+    setError(null);
+    if (!question.trim()) setQuestion(info.starter);
     requestAnimationFrame(() => {
       const input = inputRef.current;
       if (!input) return;
@@ -38,9 +37,13 @@ export function AskPage() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (!category) {
+      setError({ field: 'category', message: '先选一个分类，解读会按这个方向来写' });
+      return;
+    }
     const q = question.trim();
     if (!q || CATEGORIES.some((c) => c.starter === q)) {
-      setError(q ? '把问题写完整，再确认' : '先写下你想问的事');
+      setError({ field: 'question', message: q ? '把问题写完整，再确认' : '先写下你想问的事' });
       inputRef.current?.focus();
       return;
     }
@@ -58,18 +61,29 @@ export function AskPage() {
         <p className="muted">问「我该如何」，而不是「会不会」。卦更擅长回答怎么做，而不是替你预言结果。</p>
       </div>
 
-      <div className="chips" role="group" aria-label="问题分类">
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            className={cls('chip', category === c.id && 'is-active')}
-            aria-pressed={category === c.id}
-            onClick={() => pick(c)}
-          >
-            {c.label}
-          </button>
-        ))}
+      <div className="stack">
+        <p className="field-label">
+          问哪方面？<span className="muted">必选，解读会按这个方向来写</span>
+        </p>
+        <div className="chips" role="radiogroup" aria-label="问题分类">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="radio"
+              className={cls('chip', category === c.id && 'is-active')}
+              aria-checked={category === c.id}
+              onClick={() => pick(c)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+        {error?.field === 'category' && (
+          <p className="error small" role="alert">
+            {error.message}
+          </p>
+        )}
       </div>
 
       <form className="stack" onSubmit={submit} noValidate>
@@ -79,22 +93,22 @@ export function AskPage() {
         <textarea
           id="question"
           ref={inputRef}
-          className={cls('field', error && 'field--error')}
+          className={cls('field', error?.field === 'question' && 'field--error')}
           rows={4}
           maxLength={MAX_LENGTH}
           value={question}
           placeholder="例如：面对新的工作机会，我该如何抉择？"
-          aria-invalid={Boolean(error)}
+          aria-invalid={error?.field === 'question'}
           aria-describedby="question-hint"
           onChange={(e) => {
             setQuestion(e.target.value);
-            if (error) setError('');
+            if (error) setError(null);
           }}
         />
         <p id="question-hint" className="field-hint">
-          {error ? (
+          {error?.field === 'question' ? (
             <span className="error" role="alert">
-              {error}
+              {error.message}
             </span>
           ) : closed ? (
             '这像一道是非题。试着改成「我该如何……」，读卦时会更有收获。'

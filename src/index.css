@@ -244,6 +244,18 @@ a {
   font-size: 14px;
   color: var(--ink-2);
 }
+.field-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 15px;
+  font-weight: 600;
+}
+.field-label .muted {
+  font-size: 13px;
+  font-weight: 400;
+}
 
 .card {
   padding: 18px;
@@ -806,6 +818,18 @@ a {
 }
 .passage__plain {
   color: var(--ink-2);
+}
+.passage__angle {
+  padding-left: 12px;
+  border-left: 3px solid var(--copper);
+}
+.passage__angle-label {
+  margin-right: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--copper-soft);
+  color: var(--copper);
+  font-size: 12px;
 }
 .glossary summary {
   color: var(--ink-2);

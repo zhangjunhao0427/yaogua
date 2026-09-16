@@ -70,7 +70,10 @@ function Reading({
   const reduced = useReducedMotion();
   const cast = useMemo(() => castOf(record), [record]);
   const verdict = useMemo(() => judge(cast), [cast]);
-  const texts = useMemo(() => verdict.readings.map(({ ref, main }) => ({ ...resolveText(ref), main })), [verdict]);
+  const texts = useMemo(
+    () => verdict.readings.map(({ ref, main }) => ({ ...resolveText(ref, record.category), main })),
+    [verdict, record.category],
+  );
   const [depth, setDepth] = useState(fresh ? 1 : LAYERS.length);
   const newest = useRef<HTMLElement>(null);
 
@@ -133,6 +136,12 @@ function Reading({
               </header>
               <p className="passage__original serif">{text.original}</p>
               <p className="passage__plain">{text.plain}</p>
+              {text.angle && (
+                <p className="passage__angle">
+                  <span className="passage__angle-label">{category?.label}</span>
+                  {text.angle}
+                </p>
+              )}
             </article>
           ))}
           <Glossary texts={texts} />
@@ -328,7 +337,7 @@ function ShareButton({ record, cast, main }: { record: CastRecord; cast: Cast; m
         passage: {
           heading: `${hexagramName(main.hexagram)} · ${main.title}`,
           original: main.original,
-          plain: main.plain,
+          plain: main.angle ?? main.plain,
         },
       });
       const result = await sharer.shareImage(blob, '摇卦.png', { title: '摇卦', text: `「${record.question}」` });

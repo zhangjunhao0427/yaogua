@@ -23,6 +23,7 @@
 ## 产品规则
 
 - 流程：立问 → 静心（3 秒，可跳过）→ 摇卦 ×6 → 成卦 → 解读 → 存卦 → 七日回访
+- 立问时分类必选（事业／关系／抉择／近况），解读与分享卡片都按这个方向给落点
 - 问题确认后锁定；卦不可重：每掷一爻立即落盘，刷新或退出都无法重摇
 - 解读分四层展开：卦象 → 变占 → 经文 → 反思；判定要求几条就展示几条（k=3 必须两条卦辞）
 - 摇卦时长见 `CastPage` 的 `TIMING`：抛出 0.2s → 翻落 0.66s（错开 72ms）→ 揭晓 0.36s（间隔 120ms）
@@ -34,7 +35,8 @@
 ```
 src/
   core/      纯逻辑：random / coin / hexagram / rules / types
-  data/      经文与文案：zhouyi（64 卦全文）/ hexagrams（卦名）/ guide（分类、反思、断辞）
+  data/      经文与文案：zhouyi（64 卦全文，angles 子目录是四个分类各自的落点，
+             与经文一一对应，共 450×4 条）/ hexagrams（卦名）/ guide（分类、反思、断辞）
   platform/  storage / haptics / motion / notify / share，Web 实现 ↔ Capacitor 实现
   store/     records：卦记与摇卦进度的存取
   ui/        pages 七个页面、components、shareCard（Canvas 分享卡片）
@@ -44,7 +46,7 @@ scripts/     verify-zhouyi.mjs 经文校验
 ## 待办（按优先级）
 
 1. Capacitor 打包与两个商店上架；接入时替换 `src/platform/*` 五个实现，其中通知在 Web 端是空实现（七日回访目前靠打开应用时检查）
-2. 针对问题的解读层：把问题、本卦、之卦、变爻位、判定结论、爻辞原文一起送模型。作为可选升级，不是默认路径
+2. 可选升级：接模型按用户原话实时生成解读（现在的分类落点是预写的静态方案，已覆盖 450×4 条）。送模型时必须带爻辞原文，否则模型是在编
 3. 分享卡片在 iOS 上走 Capacitor Share 的文件分享；Web 端已做「保存图片」兜底
 
 ## 命令
