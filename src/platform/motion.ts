@@ -74,9 +74,10 @@ export const nativeMotion: Motion = {
   isSupported() {
     return true;
   },
-  // 原生读加速度计不需要用户授权，iOS 的授权弹窗只出现在网页里
-  async requestPermission() {
-    return true;
+  // Capacitor Motion 底层仍是 WebView 的 devicemotion，
+  // iOS 13+ 的 WKWebView 也可能要求授权，沿用网页那套请求流程
+  requestPermission() {
+    return webMotion.requestPermission();
   },
   onShake(handler) {
     const detect = createShakeDetector();

@@ -54,11 +54,16 @@ resources/   icon.png 1024² 与 splash.png 2732²，由 scripts 生成，@capac
 - 最终要在 Windows 上发版，所以签名走 App Store Connect API 密钥 + 云端 macOS 构建，
   不要把证书绑在某台本地机器上
 - 中国大陆区需要 ICP 备案号才能勾选；可先上架其他地区，备案后再补
+- iOS 工程用 **SPM** 而非 CocoaPods（系统 ruby 只有 2.6，装 CocoaPods 麻烦）：
+  重新生成时务必带 `--packagemanager SPM`
+- 这台 Mac 是 macOS 15.7，装不了 App Store 的最新 Xcode，用 Xcode 16.4
+- 改 web 代码后要 `npm run build && npx cap sync ios`，原生壳才拿到新资源
+- `ios/App/App/PrivacyInfo.xcprivacy` 已挂进工程资源阶段，新增用到 Required Reason API
+  的插件时要同步更新
 
 ## 待办（按优先级）
 
-1. 生成 iOS／Android 原生工程（`npx cap add ios`，需 Xcode 与 CocoaPods），模拟器验证，
-   再配证书与云端构建工作流。平台适配层已接好 Capacitor，业务代码无需再改
+1. iOS 工程已生成（`ios/`），待 Xcode 装好后模拟器验证，再配证书与云端构建工作流
 2. 可选升级：接模型按用户原话实时生成解读（现在的分类落点是预写的静态方案，已覆盖 450×4 条）。送模型时必须带爻辞原文，否则模型是在编
 3. 分享卡片在 iOS 上走 Capacitor Share 的文件分享；Web 端已做「保存图片」兜底
 
