@@ -13,6 +13,9 @@ on:
       - 'capacitor.config.ts'
       - '.github/workflows/ios-simulator.yml'
 
+permissions:
+  contents: write
+
 jobs:
   simulator:
     runs-on: macos-15
@@ -73,10 +76,12 @@ jobs:
         run: |
           mkdir -p screenshots
           sleep 6
-          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/01-首页-浅色.png
+          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/home-light.png
           xcrun simctl ui "${{ steps.boot.outputs.device }}" appearance dark
           sleep 3
-          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/02-首页-深色.png
+          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/home-dark.png
+          xcrun simctl list devices | grep Booted > screenshots/device.txt
+          xcodebuild -version >> screenshots/device.txt
 
       - name: 确认进程还活着（启动即崩会在这里暴露）
         run: |
@@ -89,3 +94,19 @@ jobs:
         with:
           name: ios-screenshots
           path: screenshots/
+
+      # artifact 要登录才能下载，另外推一份到 ci-screenshots 分支便于直接查看。
+      # 该分支只存最新一次截图，每次强制覆盖，不进 main 的历史。
+      - name: 推一份截图到 ci-screenshots 分支
+        if: always()
+        run: |
+          [ -d screenshots ] || exit 0
+          cp -R screenshots /tmp/shots
+          git checkout --orphan ci-screenshots
+          git rm -rf . > /dev/null 2>&1 || true
+          mkdir -p screenshots && cp /tmp/shots/* screenshots/
+          git add screenshots
+          git -c user.name='github-actions[bot]' \
+              -c user.email='github-actions[bot]@users.noreply.github.com' \
+              commit -m "模拟器截图 ${GITHUB_SHA::7}"
+          git push -f origin ci-screenshots
