@@ -1,7 +1,9 @@
 /**
  * 持久化适配层，业务代码只经由此处读写。
- * 接口为异步，与 Capacitor Preferences 对齐；Web 实现走 localStorage。
+ * 原生用 Capacitor Preferences，网页用 localStorage。
  */
+import { Preferences } from '@capacitor/preferences';
+import { pick } from './runtime';
 
 export interface KeyValueStorage {
   get<T>(key: string): Promise<T | null>;
@@ -37,4 +39,30 @@ export const webStorage: KeyValueStorage = {
   },
 };
 
-export const storage: KeyValueStorage = webStorage;
+export const nativeStorage: KeyValueStorage = {
+  async get<T>(key: string) {
+    try {
+      const { value } = await Preferences.get({ key: PREFIX + key });
+      return value == null ? null : (JSON.parse(value) as T);
+    } catch {
+      return null;
+    }
+  },
+  async set(key, value) {
+    try {
+      await Preferences.set({ key: PREFIX + key, value: JSON.stringify(value) });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  async remove(key) {
+    try {
+      await Preferences.remove({ key: PREFIX + key });
+    } catch {
+      // 忽略
+    }
+  },
+};
+
+export const storage: KeyValueStorage = pick(nativeStorage, webStorage);

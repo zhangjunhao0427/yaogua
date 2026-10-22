@@ -1,11 +1,14 @@
 /**
- * 摇一摇适配层。Web 用 DeviceMotionEvent，接 Capacitor 时换成 Motion 插件。
+ * 摇一摇适配层。原生用 Capacitor Motion，网页用 DeviceMotionEvent。
  */
+import type { PluginListenerHandle } from '@capacitor/core';
+import { Motion as CapMotion } from '@capacitor/motion';
+import { pick } from './runtime';
 
 export interface Motion {
   /** 设备是否可能有运动传感器（桌面浏览器返回 false） */
   isSupported(): boolean;
-  /** iOS 13+ 须在用户手势回调内调用 */
+  /** iOS 13+ 的网页须在用户手势回调内调用 */
   requestPermission(): Promise<boolean>;
   /** 监听摇动，返回取消监听的函数 */
   onShake(handler: () => void): () => void;
@@ -67,4 +70,34 @@ export const webMotion: Motion = {
   },
 };
 
-export const motion: Motion = webMotion;
+export const nativeMotion: Motion = {
+  isSupported() {
+    return true;
+  },
+  // 原生读加速度计不需要用户授权，iOS 的授权弹窗只出现在网页里
+  async requestPermission() {
+    return true;
+  },
+  onShake(handler) {
+    const detect = createShakeDetector();
+    let handle: PluginListenerHandle | null = null;
+    let stopped = false;
+
+    void CapMotion.addListener('accel', (event) => {
+      const a = event.accelerationIncludingGravity;
+      if (!a) return;
+      if (detect({ x: a.x ?? 0, y: a.y ?? 0, z: a.z ?? 0 }, Date.now())) handler();
+    }).then((listener) => {
+      handle = listener;
+      // 监听器注册完成前就取消了，补一次移除
+      if (stopped) void listener.remove();
+    });
+
+    return () => {
+      stopped = true;
+      void handle?.remove();
+    };
+  },
+};
+
+export const motion: Motion = pick(nativeMotion, webMotion);

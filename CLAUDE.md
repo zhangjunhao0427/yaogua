@@ -38,15 +38,27 @@ src/
   core/      纯逻辑：random / coin / hexagram / rules / types
   data/      经文与文案：zhouyi（64 卦全文，angles 子目录是四个分类各自的落点，
              与经文一一对应，共 450×4 条）/ hexagrams（卦名）/ guide（分类、反思、断辞）
-  platform/  storage / haptics / motion / notify / share，Web 实现 ↔ Capacitor 实现
+  platform/  storage / haptics / motion / notify / share / app，每个文件同时导出
+             webXxx 与 nativeXxx，由 runtime.ts 的 pick() 按平台选；业务代码只认接口
   store/     records：卦记与摇卦进度的存取
   ui/        pages 七个页面、components、shareCard（Canvas 分享卡片）
 scripts/     verify-zhouyi.mjs 经文校验
+resources/   icon.png 1024² 与 splash.png 2732²，由 scripts 生成，@capacitor/assets 派生各尺寸
 ```
+
+## 打包上架
+
+- `capacitor.config.ts`：appId 为 `com.zhangjunhao0427.yaogua`，**上架后不可更改**；webDir 指向 `dist`
+- 网页资源随包发布，从 file:// 加载，不连任何服务器
+- iOS 的编译、签名、上传只能在 macOS 上做；Windows 只能改代码、填资料、提交审核
+- 最终要在 Windows 上发版，所以签名走 App Store Connect API 密钥 + 云端 macOS 构建，
+  不要把证书绑在某台本地机器上
+- 中国大陆区需要 ICP 备案号才能勾选；可先上架其他地区，备案后再补
 
 ## 待办（按优先级）
 
-1. Capacitor 打包与两个商店上架；接入时替换 `src/platform/*` 五个实现，其中通知在 Web 端是空实现（七日回访目前靠打开应用时检查）
+1. 生成 iOS／Android 原生工程（`npx cap add ios`，需 Xcode 与 CocoaPods），模拟器验证，
+   再配证书与云端构建工作流。平台适配层已接好 Capacitor，业务代码无需再改
 2. 可选升级：接模型按用户原话实时生成解读（现在的分类落点是预写的静态方案，已覆盖 450×4 条）。送模型时必须带爻辞原文，否则模型是在编
 3. 分享卡片在 iOS 上走 Capacitor Share 的文件分享；Web 端已做「保存图片」兜底
 
