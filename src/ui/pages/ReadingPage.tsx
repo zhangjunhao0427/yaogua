@@ -24,6 +24,14 @@ import { useReducedMotion } from '../hooks';
 import { renderShareCard } from '../shareCard';
 
 const LAYERS = ['卦象', '变占', '经文', '反思'] as const;
+
+/** 下一层有什么，按当前深度取：展开到第 n 层时读 NEXT_HINT[n] */
+const NEXT_HINT = [
+  '',
+  '本卦的卦辞与爻辞不是全读，先按变爻个数定下该读哪几句。',
+  '接着给出该读的经文原文与白话。',
+  '最后是几个把这一卦落到你那件事上的问题。',
+] as const;
 const NUMERALS = '一二三四';
 const OUTCOMES: readonly Outcome[] = ['fulfilled', 'partial', 'unfulfilled'];
 
@@ -164,9 +172,12 @@ function Reading({
       )}
 
       {depth < LAYERS.length ? (
-        <button type="button" className="btn btn--primary btn--block" onClick={() => setDepth((d) => d + 1)}>
-          下一层：{LAYERS[depth]}
-        </button>
+        <div className="stack">
+          <p className="small muted center">{NEXT_HINT[depth]}</p>
+          <button type="button" className="btn btn--primary btn--block" onClick={() => setDepth((d) => d + 1)}>
+            下一层：{LAYERS[depth]}
+          </button>
+        </div>
       ) : (
         <>
           <ReviewSection record={record} onChange={onChange} />
@@ -236,6 +247,15 @@ function Aspects({ base }: { base: Hexagram }) {
     ['reversed', reversed],
   ] as const;
 
+  /** 这三个卦可能彼此相同，甚至与本卦相同，说明一句免得看着像出错 */
+  function sameNote(key: PerspectiveKey, hexagram: Hexagram): string {
+    if (hexagram.number === base.number) return '　这一卦与本卦相同。';
+    if (key === 'reversed' && hexagram.number === opposite.number) {
+      return '　这一卦与错卦相同：阴阳全翻与上下颠倒，在这一卦上得到的是同一个结果，八个卦有此性质。';
+    }
+    return '';
+  }
+
   return (
     <details className="aspects">
       <summary>互卦 · 错卦 · 综卦：再换三个角度看</summary>
@@ -256,7 +276,7 @@ function Aspects({ base }: { base: Hexagram }) {
                 </p>
                 <p className="small muted">
                   {meaning}
-                  {hexagram.number === base.number && '　这一卦与本卦相同。'}
+                  {sameNote(key, hexagram)}
                 </p>
               </div>
             </li>
