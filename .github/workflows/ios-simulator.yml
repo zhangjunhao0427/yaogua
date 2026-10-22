@@ -1,0 +1,91 @@
+# 在云端 Mac 上编译 iOS 版并装进模拟器截图。
+# 只构建模拟器版本，不签名，所以不需要开发者账号与证书。
+name: iOS 模拟器验证
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'ios/**'
+      - 'package.json'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios-simulator.yml'
+
+jobs:
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: 装依赖并构建网页资源
+        run: |
+          npm ci
+          npm run build
+          npx cap sync ios
+
+      - name: 环境信息
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes | grep iOS || true
+
+      - name: 编译模拟器版
+        working-directory: ios/App
+        run: |
+          xcodebuild \
+            -project App.xcodeproj \
+            -scheme App \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath build \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: 启动模拟器并安装
+        id: boot
+        run: |
+          DEVICE=$(xcrun simctl list devices available --json | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)['devices']
+          for runtime in sorted(data, reverse=True):
+              for device in data[runtime]:
+                  if 'iPhone' in device['name']:
+                      print(device['udid'])
+                      sys.exit()
+          sys.exit('找不到可用的 iPhone 模拟器')
+          ")
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$DEVICE"
+          xcrun simctl bootstatus "$DEVICE" -b
+          xcrun simctl install "$DEVICE" ios/App/build/Build/Products/Debug-iphonesimulator/App.app
+          xcrun simctl launch "$DEVICE" com.zhangjunhao0427.yaogua
+
+      - name: 截图（浅色与深色）
+        run: |
+          mkdir -p screenshots
+          sleep 6
+          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/01-首页-浅色.png
+          xcrun simctl ui "${{ steps.boot.outputs.device }}" appearance dark
+          sleep 3
+          xcrun simctl io "${{ steps.boot.outputs.device }}" screenshot screenshots/02-首页-深色.png
+
+      - name: 确认进程还活着（启动即崩会在这里暴露）
+        run: |
+          test -n "$(xcrun simctl spawn '${{ steps.boot.outputs.device }}' launchctl list | grep yaogua || true)" \
+            && echo '应用进程在运行' \
+            || (echo '应用没有在运行，可能启动即崩'; exit 1)
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-screenshots
+          path: screenshots/
