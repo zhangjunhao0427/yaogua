@@ -120,6 +120,8 @@ function Reading({
             ? `变爻：${cast.changing.map((i) => lineTitle(i, cast.base.yang[i])).join('、')}　○ 老阳　× 老阴`
             : '六爻皆不变，没有之卦'}
         </p>
+        <Brief perspectiveKey="base" hexagram={cast.base} main />
+        {cast.changed && <Brief perspectiveKey="changed" hexagram={cast.changed} />}
         <Aspects base={cast.base} />
       </Layer>
 
@@ -222,19 +224,40 @@ function Figure({
   hexagram: Hexagram;
   changing: readonly number[];
 }) {
-  const { label, role } = perspective(perspectiveKey);
+  const { label } = perspective(perspectiveKey);
   const name = hexagramFullName(hexagram.number);
   return (
     <figure className="figure">
-      <span className="figure__caption">
-        {label} · {role}
-      </span>
+      <span className="figure__caption">{label}</span>
       <HexagramFigure yang={hexagram.yang} changing={changing} label={`${label}${name}`} />
-      <figcaption className="figure__text">
-        <span className="figure__name serif">{name}</span>
-        <span className="figure__theme">{hexagramText(hexagram.number).theme}</span>
-      </figcaption>
+      <figcaption className="figure__name serif">{name}</figcaption>
     </figure>
+  );
+}
+
+/** 这一卦讲的是什么：本卦为主，之卦次之 */
+function Brief({
+  perspectiveKey,
+  hexagram,
+  main = false,
+}: {
+  perspectiveKey: PerspectiveKey;
+  hexagram: Hexagram;
+  main?: boolean;
+}) {
+  const { label, role } = perspective(perspectiveKey);
+  const { theme, summary } = hexagramText(hexagram.number);
+  return (
+    <section className={cls('card brief', main && 'brief--main')}>
+      <p className="eyebrow">
+        {label} · {role}
+      </p>
+      <p className="brief__name serif">
+        {hexagramFullName(hexagram.number)}
+        <span className="brief__theme">{theme}</span>
+      </p>
+      <p className="brief__text">{summary}</p>
+    </section>
   );
 }
 

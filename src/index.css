@@ -776,16 +776,35 @@ a {
   font-size: 12px;
   letter-spacing: 0.2em;
 }
-.figure__text {
+.figure__name {
+  font-size: 17px;
+}
+
+.brief {
   display: flex;
   flex-direction: column;
+  gap: 6px;
 }
-.figure__name {
-  font-size: 19px;
+.brief--main {
+  border-color: var(--copper);
 }
-.figure__theme {
+.brief__name {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 21px;
+}
+.brief--main .brief__name {
+  font-size: 24px;
+}
+.brief__theme {
+  color: var(--copper);
+  font-size: 14px;
+}
+.brief__text {
   color: var(--ink-2);
-  font-size: 13px;
+  line-height: 1.8;
 }
 .figures__arrow {
   align-self: center;

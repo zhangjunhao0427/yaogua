@@ -41,6 +41,17 @@ describe('经文数据', () => {
   it('卦义均为四字', () => {
     for (const h of ZHOUYI) expect([...h.theme]).toHaveLength(4);
   });
+
+  it('64 卦各有卦象阐释，长短适中、互不相同', () => {
+    const summaries = ZHOUYI.map((h) => h.summary);
+    expect(new Set(summaries).size).toBe(64);
+    for (const summary of summaries) {
+      expect([...summary].length).toBeGreaterThanOrEqual(30);
+      expect([...summary].length).toBeLessThanOrEqual(70);
+      expect(summary).toMatch(/。$/);
+      expect(summary).not.toMatch(/[,.;:!?'"()]/);
+    }
+  });
 });
 
 describe('规则层闭合', () => {

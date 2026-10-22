@@ -7,8 +7,10 @@ export type Passage = readonly [original: string, plain: string];
 export type LinePassage = readonly [title: string, original: string, plain: string];
 
 export interface HexagramText {
-  /** 卦义，一句话概括 */
+  /** 卦义，四字概括 */
   readonly theme: string;
+  /** 卦象阐释：卦象由何而来、象征什么处境 */
+  readonly summary: string;
   /** 卦辞 */
   readonly judgment: Passage;
   /** 爻辞，由初爻到上爻 */
