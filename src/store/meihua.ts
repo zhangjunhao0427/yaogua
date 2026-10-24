@@ -81,6 +81,16 @@ export function createMeihuaStore(storage: KeyValueStorage, notifier: Notifier) 
       return (await read()).find((r) => r.id === id) ?? null;
     },
 
+    /** 删掉一条卦记，同时撤掉它的回访提醒 */
+    async remove(id: string): Promise<boolean> {
+      const records = await read();
+      const left = records.filter((r) => r.id !== id);
+      if (left.length === records.length) return false;
+      await write(left);
+      await notifier.cancel(reminderIdOf(id));
+      return true;
+    },
+
     async saveReview(id: string, outcome: Outcome, note: string, now = Date.now()): Promise<MeihuaRecord | null> {
       const records = await read();
       const target = records.find((r) => r.id === id);

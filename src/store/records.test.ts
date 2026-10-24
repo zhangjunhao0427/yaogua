@@ -111,6 +111,36 @@ describe('卦记存储', () => {
     expect(cancelled).toEqual([reminderIdOf(record.id)]);
   });
 
+  it('删除卦记，并撤销它的回访提醒', async () => {
+    const { notifier, cancelled } = fakeNotifier();
+    const store = createRecordStore(memoryStorage().storage, notifier);
+    const first = await castFull(store, '第一卦', 1_000);
+    const second = await castFull(store, '第二卦', 2_000);
+
+    expect(await store.remove(first.id)).toBe(true);
+    expect((await store.listRecords()).map((r) => r.id)).toEqual([second.id]);
+    expect(cancelled).toContain(reminderIdOf(first.id));
+    expect(await store.getRecord(first.id)).toBeNull();
+  });
+
+  it('删除不存在的卦记返回 false，不影响其他记录', async () => {
+    const store = createRecordStore(memoryStorage().storage, fakeNotifier().notifier);
+    const record = await castFull(store);
+    expect(await store.remove('没有这个 id')).toBe(false);
+    expect(await store.listRecords()).toHaveLength(1);
+    expect(record.id).toBeTruthy();
+  });
+
+  it('删除后重新载入，记录不会复活', async () => {
+    const { storage } = memoryStorage();
+    const store = createRecordStore(storage, fakeNotifier().notifier);
+    const record = await castFull(store);
+    await store.remove(record.id);
+
+    const reopened = createRecordStore(storage, fakeNotifier().notifier);
+    expect(await reopened.listRecords()).toEqual([]);
+  });
+
   it('本地数据损坏时不崩溃，丢弃无效条目', async () => {
     const { storage } = memoryStorage({
       'draft.v1': '{"id":1}',

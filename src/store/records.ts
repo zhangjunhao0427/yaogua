@@ -143,6 +143,16 @@ export function createRecordStore(storage: KeyValueStorage, notifier: Notifier) 
       return (await recordSlot.read()).find((r) => r.id === id) ?? null;
     },
 
+    /** 删掉一条卦记，同时撤掉它的回访提醒 */
+    async remove(id: string): Promise<boolean> {
+      const records = await recordSlot.read();
+      const left = records.filter((r) => r.id !== id);
+      if (left.length === records.length) return false;
+      await recordSlot.write(left);
+      await notifier.cancel(reminderIdOf(id));
+      return true;
+    },
+
     async saveReview(id: string, outcome: Outcome, note: string, now = Date.now()): Promise<CastRecord | null> {
       const records = await recordSlot.read();
       const target = records.find((r) => r.id === id);

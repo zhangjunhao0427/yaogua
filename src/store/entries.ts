@@ -37,6 +37,10 @@ export function entryHexagrams(entry: Entry): { from: number; to: number | null 
   return { from: cast.origin.number, to: cast.changed.number };
 }
 
+export async function removeEntry(entry: Entry): Promise<boolean> {
+  return entry.kind === 'coin' ? recordStore.remove(entry.id) : meihuaStore.remove(entry.id);
+}
+
 export async function listEntries(): Promise<Entry[]> {
   const [coins, meihua] = await Promise.all([recordStore.listRecords(), meihuaStore.list()]);
   return [

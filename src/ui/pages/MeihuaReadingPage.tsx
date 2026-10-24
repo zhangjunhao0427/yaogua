@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { lineTitle } from '../../core/hexagram';
 import { ELEMENT_OF, NUMBER_BY_TRIGRAM, type MeihuaCast } from '../../core/meihua';
 import type { Hexagram } from '../../core/types';
@@ -16,6 +16,7 @@ import {
 } from '../../store/meihua';
 import { OUTCOME_LABEL, type Outcome } from '../../store/records';
 import { cls } from '../cls';
+import { DeleteButton } from '../components/DeleteButton';
 import { HexagramFigure } from '../components/HexagramFigure';
 import { Screen } from '../components/Screen';
 import { formatDate, formatDateTime } from '../format';
@@ -55,6 +56,7 @@ export function MeihuaReadingPage() {
 }
 
 function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record: MeihuaRecord) => void }) {
+  const navigate = useNavigate();
   const cast = useMemo(() => castOfRecord(record), [record]);
   const relation = RELATION_LORE[cast.relation];
   const category = record.category ? categoryInfo(record.category) : null;
@@ -152,6 +154,12 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
         <Link className="btn btn--text" to="/">
           回首页
         </Link>
+        <DeleteButton
+          onDelete={async () => {
+            await meihuaStore.remove(record.id);
+            navigate('/records', { replace: true });
+          }}
+        />
       </div>
     </Screen>
   );

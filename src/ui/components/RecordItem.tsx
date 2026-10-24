@@ -4,9 +4,10 @@ import { entryDue, entryFigure, entryHexagrams, entryHref, type Entry } from '..
 import { OUTCOME_LABEL } from '../../store/records';
 import { cls } from '../cls';
 import { formatDate } from '../format';
+import { DeleteButton } from './DeleteButton';
 import { HexagramFigure } from './HexagramFigure';
 
-export function RecordItem({ entry }: { entry: Entry }) {
+export function RecordItem({ entry, onDelete }: { entry: Entry; onDelete?: () => Promise<unknown> }) {
   const figure = entryFigure(entry);
   const { from, to } = entryHexagrams(entry);
   const due = entryDue(entry);
@@ -14,7 +15,7 @@ export function RecordItem({ entry }: { entry: Entry }) {
   const status = review ? OUTCOME_LABEL[review.outcome] : due ? '待回访' : null;
 
   return (
-    <li>
+    <li className="record-row">
       <Link to={entryHref(entry)} className="record">
         <HexagramFigure yang={figure.yang} changing={figure.changing} size="sm" />
         <span className="record__body">
@@ -24,8 +25,9 @@ export function RecordItem({ entry }: { entry: Entry }) {
             {to !== null && ` 之 ${hexagramName(to)}`}
           </span>
         </span>
-        {status && <span className={cls('badge', due && 'badge--accent')}>{status}</span>}
+        {status && !onDelete && <span className={cls('badge', due && 'badge--accent')}>{status}</span>}
       </Link>
+      {onDelete && <DeleteButton compact label="删除" confirmLabel="确定？" onDelete={onDelete} />}
     </li>
   );
 }

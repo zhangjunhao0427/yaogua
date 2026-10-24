@@ -203,6 +203,38 @@ a {
   background: none;
   color: var(--ink-2);
 }
+.btn--text.is-active {
+  color: var(--copper);
+}
+.btn--compact {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+.btn--danger {
+  border-color: var(--danger);
+  background: none;
+  color: var(--danger);
+}
+
+.records__bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.record-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.record-row .record {
+  flex: 1;
+  min-width: 0;
+}
+.record-row .btn--danger {
+  flex: none;
+}
 
 .chips {
   display: flex;

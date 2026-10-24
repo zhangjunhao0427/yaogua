@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { aspectsOf, lineTitle } from '../../core/hexagram';
 import { judge } from '../../core/rules';
 import type { Cast, Hexagram } from '../../core/types';
@@ -17,6 +17,7 @@ import {
   type Outcome,
 } from '../../store/records';
 import { cls } from '../cls';
+import { DeleteButton } from '../components/DeleteButton';
 import { HexagramFigure } from '../components/HexagramFigure';
 import { Screen } from '../components/Screen';
 import { formatDate, formatDateTime } from '../format';
@@ -76,6 +77,7 @@ function Reading({
   onChange: (record: CastRecord) => void;
 }) {
   const reduced = useReducedMotion();
+  const navigate = useNavigate();
   const cast = useMemo(() => castOf(record), [record]);
   const verdict = useMemo(() => judge(cast), [cast]);
   const texts = useMemo(
@@ -188,6 +190,12 @@ function Reading({
             <Link className="btn btn--text" to="/">
               回首页
             </Link>
+            <DeleteButton
+              onDelete={async () => {
+                await recordStore.remove(record.id);
+                navigate('/records', { replace: true });
+              }}
+            />
           </div>
         </>
       )}
