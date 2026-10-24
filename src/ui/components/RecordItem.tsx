@@ -1,23 +1,27 @@
 import { Link } from 'react-router-dom';
 import { hexagramName } from '../../data/hexagrams';
-import { castOf, isReviewDue, OUTCOME_LABEL, type CastRecord } from '../../store/records';
+import { entryDue, entryFigure, entryHexagrams, entryHref, type Entry } from '../../store/entries';
+import { OUTCOME_LABEL } from '../../store/records';
 import { cls } from '../cls';
 import { formatDate } from '../format';
 import { HexagramFigure } from './HexagramFigure';
 
-export function RecordItem({ record }: { record: CastRecord }) {
-  const cast = castOf(record);
-  const due = isReviewDue(record);
-  const status = record.review ? OUTCOME_LABEL[record.review.outcome] : due ? '待回访' : null;
+export function RecordItem({ entry }: { entry: Entry }) {
+  const figure = entryFigure(entry);
+  const { from, to } = entryHexagrams(entry);
+  const due = entryDue(entry);
+  const review = entry.record.review;
+  const status = review ? OUTCOME_LABEL[review.outcome] : due ? '待回访' : null;
+
   return (
     <li>
-      <Link to={`/r/${record.id}`} className="record">
-        <HexagramFigure yang={cast.base.yang} changing={cast.changing} size="sm" />
+      <Link to={entryHref(entry)} className="record">
+        <HexagramFigure yang={figure.yang} changing={figure.changing} size="sm" />
         <span className="record__body">
-          <span className="record__question">{record.question}</span>
+          <span className="record__question">{entry.record.question}</span>
           <span className="record__meta">
-            {formatDate(record.createdAt)} · {hexagramName(cast.base.number)}
-            {cast.changed && ` 之 ${hexagramName(cast.changed.number)}`}
+            {formatDate(entry.createdAt)} · {entry.kind === 'coin' ? '铜钱' : '梅花'} · {hexagramName(from)}
+            {to !== null && ` 之 ${hexagramName(to)}`}
           </span>
         </span>
         {status && <span className={cls('badge', due && 'badge--accent')}>{status}</span>}

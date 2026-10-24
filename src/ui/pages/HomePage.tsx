@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { isReviewDue, recordStore } from '../../store/records';
+import { entryDue, entryHref, listEntries } from '../../store/entries';
+import { recordStore } from '../../store/records';
 import { HexagramFigure } from '../components/HexagramFigure';
 import { RecordItem } from '../components/RecordItem';
 import { Screen } from '../components/Screen';
@@ -10,8 +11,8 @@ const HERO = [true, false, true, false, true, false];
 
 export function HomePage() {
   const draft = useLoad(() => recordStore.loadDraft(), []);
-  const records = useLoad(() => recordStore.listRecords(), []);
-  const due = records?.filter((r) => isReviewDue(r)) ?? [];
+  const entries = useLoad(() => listEntries(), []);
+  const due = entries?.filter((entry) => entryDue(entry)) ?? [];
 
   return (
     <Screen className="home">
@@ -34,24 +35,30 @@ export function HomePage() {
             <p className="small muted center">「{draft.question}」</p>
           </div>
         ) : (
-          <Link className="btn btn--primary btn--block" to="/ask">
-            起一卦
-          </Link>
+          <div className="stack">
+            <Link className="btn btn--primary btn--block" to="/ask">
+              摇铜钱起卦
+            </Link>
+            <Link className="btn btn--block" to="/meihua">
+              梅花易数
+            </Link>
+            <p className="small muted center">铜钱法六爻可变，梅花按时间或数起卦、只动一爻。</p>
+          </div>
         ))}
 
       {due.length > 0 && (
-        <Link className="card notice" to={`/r/${due[0].id}`}>
+        <Link className="card notice" to={entryHref(due[0])}>
           <span>{due.length} 卦已满七日，回来看看应验了没有</span>
           <span aria-hidden="true">›</span>
         </Link>
       )}
 
-      {records && records.length > 0 && (
+      {entries && entries.length > 0 && (
         <section>
           <h2 className="section-title">最近卦记</h2>
           <ul className="records">
-            {records.slice(0, 3).map((r) => (
-              <RecordItem key={r.id} record={r} />
+            {entries.slice(0, 3).map((entry) => (
+              <RecordItem key={`${entry.kind}-${entry.id}`} entry={entry} />
             ))}
           </ul>
         </section>

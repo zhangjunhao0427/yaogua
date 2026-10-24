@@ -926,6 +926,65 @@ a {
   color: var(--copper);
   font-size: 12px;
 }
+/* 梅花易数 */
+.verdict-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-color: var(--copper);
+}
+.verdict-card--凶 {
+  border-color: var(--danger);
+}
+.verdict-card__line {
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.verdict-card__head {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 24px;
+}
+.verdict-card__tag {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--copper-soft);
+  color: var(--copper);
+  font-size: 13px;
+}
+.verdict-card--凶 .verdict-card__tag {
+  background: transparent;
+  color: var(--danger);
+  box-shadow: inset 0 0 0 1px currentcolor;
+}
+.stages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stage-card__body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+.stage-card__body > .hexagram {
+  flex: none;
+  margin-top: 4px;
+}
+.stage-card .brief__name {
+  font-size: 18px;
+}
+.number-row {
+  display: flex;
+  gap: 10px;
+}
+.number-row .field {
+  flex: 1;
+  min-width: 0;
+}
+
 .review {
   display: flex;
   flex-direction: column;
