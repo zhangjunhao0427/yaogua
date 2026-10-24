@@ -1,12 +1,16 @@
 // 立问与解读的引导文案（本项目原创）
 
-export type Category = 'career' | 'relationship' | 'decision' | 'recent';
+/** 有分类落点的八个方向，顺序与 angles 数据的列一一对应，不可调换 */
+export type AngleCategory = 'career' | 'relationship' | 'decision' | 'recent' | 'health' | 'money' | 'study' | 'family';
+
+/** 加上「其他」：问的事不属于那八类，此时不给分类落点，只给通用白话 */
+export type Category = AngleCategory | 'other';
 
 export interface CategoryInfo {
   readonly id: Category;
   readonly label: string;
-  /** 输入框为空时填入的开头 */
-  readonly starter: string;
+  /** 输入框的例句提示 */
+  readonly hint: string;
   readonly reflection: string;
 }
 
@@ -14,30 +18,71 @@ export const CATEGORIES: readonly CategoryInfo[] = [
   {
     id: 'career',
     label: '事业',
-    starter: '在工作上，我该如何',
+    hint: '例如：面对新的工作机会，我该如何抉择？',
     reflection: '这件事里，哪一部分是你真正能掌控的？把经文提示的姿态放到那一部分，会是什么样子？',
   },
   {
     id: 'relationship',
     label: '关系',
-    starter: '在这段关系里，我该如何',
+    hint: '例如：和他闹僵了，我该如何相处？',
     reflection: '对方此刻可能处在什么位置？经文里的姿态，说的是你，还是这段关系本身？',
   },
   {
     id: 'decision',
     label: '抉择',
-    starter: '面对这个选择，我该如何',
+    hint: '例如：两个都舍不得，我该如何取舍？',
     reflection: '把两个选项都按这句话去做一遍，哪一个做起来更自然？',
   },
   {
     id: 'recent',
     label: '近况',
-    starter: '最近这段时间，我该如何',
+    hint: '例如：最近心里很乱，我该如何调整？',
     reflection: '这段时间，你最想「止」住的是什么？最想再「进」一步的又是什么？',
+  },
+  {
+    id: 'health',
+    label: '健康',
+    hint: '例如：这个毛病反复发作，我该如何对待？',
+    reflection: '身体给过你哪些信号？经文说的那个姿态，落到作息和就医上会是什么？',
+  },
+  {
+    id: 'money',
+    label: '钱财',
+    hint: '例如：这笔钱要不要投，我该如何判断？',
+    reflection: '最坏的情况你能不能承受？经文提示的是进、是守，还是先退？',
+  },
+  {
+    id: 'study',
+    label: '学业',
+    hint: '例如：这门课怎么都学不进去，我该如何调整？',
+    reflection: '是方法的问题，还是状态的问题？经文指向的是加力，还是换路？',
+  },
+  {
+    id: 'family',
+    label: '家庭',
+    hint: '例如：父母的事我该如何处理？',
+    reflection: '在这个家里你担着什么角色？经文说的进退，放到这个角色上合适吗？',
+  },
+  {
+    id: 'other',
+    label: '其他',
+    hint: '例如：这件事我该如何面对？',
+    reflection: '这件事最像上面哪一类？经文的姿态搬过去，还站得住吗？',
   },
 ];
 
 export const CATEGORY_IDS: readonly Category[] = CATEGORIES.map((c) => c.id);
+
+/** 有落点的八类，顺序即 angles 的列序 */
+export const ANGLE_CATEGORY_IDS: readonly AngleCategory[] = CATEGORIES.map((c) => c.id).filter(
+  (id): id is AngleCategory => id !== 'other',
+);
+
+export const categoryInfo = (id: Category): CategoryInfo => {
+  const found = CATEGORIES.find((c) => c.id === id);
+  if (!found) throw new Error(`没有这个分类：${id}`);
+  return found;
+};
 
 /** 「会不会」「能不能」这类是非题，提示改为开放式问题 */
 export function isClosedQuestion(question: string): boolean {

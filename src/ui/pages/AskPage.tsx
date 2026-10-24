@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CATEGORIES, isClosedQuestion, type Category, type CategoryInfo } from '../../data/guide';
+import { CATEGORIES, categoryInfo, isClosedQuestion, type Category, type CategoryInfo } from '../../data/guide';
 import { recordStore } from '../../store/records';
 import { cls } from '../cls';
 import { Screen } from '../components/Screen';
@@ -22,28 +22,22 @@ export function AskPage() {
     if (draft) navigate('/cast', { replace: true });
   }, [draft, navigate]);
 
+  // 分类只决定解读方向，不往输入框塞半截话——那会让人以为已经写好了
   function pick(info: CategoryInfo) {
-    // 分类必选，点击只切换到该项，不取消
     setCategory(info.id);
     setError(null);
-    if (!question.trim()) setQuestion(info.starter);
-    requestAnimationFrame(() => {
-      const input = inputRef.current;
-      if (!input) return;
-      input.focus();
-      input.setSelectionRange(input.value.length, input.value.length);
-    });
+    inputRef.current?.focus();
   }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!category) {
-      setError({ field: 'category', message: '先选一个分类，解读会按这个方向来写' });
+      setError({ field: 'category', message: '先选一个方向，解读会按它来写' });
       return;
     }
     const q = question.trim();
-    if (!q || CATEGORIES.some((c) => c.starter === q)) {
-      setError({ field: 'question', message: q ? '把问题写完整，再确认' : '先写下你想问的事' });
+    if (!q) {
+      setError({ field: 'question', message: '先写下你想问的事' });
       inputRef.current?.focus();
       return;
     }
@@ -63,7 +57,7 @@ export function AskPage() {
 
       <div className="stack">
         <p className="field-label">
-          问哪方面？<span className="muted">必选，解读会按这个方向来写</span>
+          这件事属于哪一类？<span className="muted">必选，解读会按它来写</span>
         </p>
         <div className="chips" role="radiogroup" aria-label="问题分类">
           {CATEGORIES.map((c) => (
@@ -97,7 +91,7 @@ export function AskPage() {
           rows={4}
           maxLength={MAX_LENGTH}
           value={question}
-          placeholder="例如：面对新的工作机会，我该如何抉择？"
+          placeholder={category ? categoryInfo(category).hint : '例如：面对新的工作机会，我该如何抉择？'}
           aria-invalid={error?.field === 'question'}
           aria-describedby="question-hint"
           onChange={(e) => {
@@ -121,7 +115,11 @@ export function AskPage() {
         <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
           确认问题
         </button>
-        <p className="small muted center">确认后问题锁定，这一卦不能再改。</p>
+        <p className="small muted center">
+          解读按你选的方向来写。这句话只存给你自己看，七日回访时用来对照。
+          <br />
+          确认后问题锁定，这一卦不能再改。
+        </p>
       </form>
     </Screen>
   );
