@@ -1111,3 +1111,9 @@ a {
     scroll-behavior: auto !important;
   }
 }
+.records__actions {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  align-items: center;
+}

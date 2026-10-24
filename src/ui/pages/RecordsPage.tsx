@@ -41,13 +41,18 @@ export function RecordsPage() {
         <>
           <div className="records__bar">
             <span className="small muted">共 {entries.length} 卦，只保存在这台设备上。</span>
-            <button
-              type="button"
-              className={cls('btn btn--text btn--compact', editing && 'is-active')}
-              onClick={() => setEditing((on) => !on)}
-            >
-              {editing ? '完成' : '管理'}
-            </button>
+            <span className="records__actions">
+              <Link className="btn btn--text btn--compact" to="/data">
+                备份
+              </Link>
+              <button
+                type="button"
+                className={cls('btn btn--text btn--compact', editing && 'is-active')}
+                onClick={() => setEditing((on) => !on)}
+              >
+                {editing ? '完成' : '管理'}
+              </button>
+            </span>
           </div>
           <ul className="records">
             {entries.map((entry) => (

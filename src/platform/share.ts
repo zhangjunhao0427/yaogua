@@ -16,7 +16,9 @@ export type ShareResult = 'shared' | 'copied' | 'cancelled' | 'failed';
 
 export interface Sharer {
   share(content: ShareContent): Promise<ShareResult>;
-  /** 分享图片；环境不支持分享文件时返回 'unsupported'，由界面改为展示图片供保存 */
+  /** 分享文件；环境不支持分享文件时返回 'unsupported'，由界面改走下载 */
+  shareFile(file: Blob, fileName: string, content: ShareContent): Promise<ShareResult | 'unsupported'>;
+  /** 分享图片，与 shareFile 同义，保留给分享卡片使用 */
   shareImage(image: Blob, fileName: string, content: ShareContent): Promise<ShareResult | 'unsupported'>;
 }
 
@@ -28,8 +30,8 @@ function isCancelled(e: unknown): boolean {
 }
 
 export const webSharer: Sharer = {
-  async shareImage(image, fileName, content) {
-    const file = new File([image], fileName, { type: image.type });
+  async shareFile(blob, fileName, content) {
+    const file = new File([blob], fileName, { type: blob.type });
     if (typeof navigator === 'undefined' || !navigator.canShare?.({ files: [file] })) return 'unsupported';
     try {
       await navigator.share({ files: [file], title: content.title, text: content.text });
@@ -37,6 +39,9 @@ export const webSharer: Sharer = {
     } catch (e) {
       return isCancelled(e) ? 'cancelled' : 'failed';
     }
+  },
+  shareImage(image, fileName, content) {
+    return webSharer.shareFile(image, fileName, content);
   },
   async share(content) {
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
@@ -77,13 +82,13 @@ export const nativeSharer: Sharer = {
       return isCancelled(e) ? 'cancelled' : 'failed';
     }
   },
-  async shareImage(image, fileName, content) {
+  async shareFile(blob, fileName, content) {
     try {
       // 中文文件名在部分系统上会出问题，统一用安全名
-      const safeName = /^[\w.-]+$/.test(fileName) ? fileName : 'yaogua-card.png';
+      const safeName = /^[\w.-]+$/.test(fileName) ? fileName : 'yaogua-file';
       const { uri } = await Filesystem.writeFile({
         path: safeName,
-        data: await toBase64(image),
+        data: await toBase64(blob),
         directory: Directory.Cache,
       });
       await Share.share({ title: content.title, text: content.text, files: [uri] });
@@ -91,6 +96,9 @@ export const nativeSharer: Sharer = {
     } catch (e) {
       return isCancelled(e) ? 'cancelled' : 'failed';
     }
+  },
+  shareImage(image, fileName, content) {
+    return nativeSharer.shareFile(image, fileName, content);
   },
 };
 

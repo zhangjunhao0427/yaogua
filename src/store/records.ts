@@ -3,6 +3,7 @@ import type { Cast, Line, SixOf } from '../core/types';
 import { CATEGORY_IDS, type Category } from '../data/guide';
 import { notifier as platformNotifier, type Notifier } from '../platform/notify';
 import { storage as platformStorage, type KeyValueStorage } from '../platform/storage';
+import { keepSlot } from './keep';
 
 export type Outcome = 'fulfilled' | 'partial' | 'unfulfilled';
 
@@ -97,7 +98,12 @@ export function createRecordStore(storage: KeyValueStorage, notifier: Notifier) 
   }
 
   const draftSlot = slot<Draft | null>(DRAFT_KEY, (raw) => (isDraft(raw) ? raw : null));
-  const recordSlot = slot<CastRecord[]>(RECORDS_KEY, (raw) => (Array.isArray(raw) ? raw.filter(isRecord) : []));
+  // 认不出来的条目原样留着，详见 keep.ts
+  const records = keepSlot<CastRecord>(storage, RECORDS_KEY, isRecord);
+  const recordSlot = {
+    read: async (): Promise<CastRecord[]> => (await records.read()).known,
+    write: (list: CastRecord[]): Promise<void> => records.write(list),
+  };
 
   return {
     loadDraft: (): Promise<Draft | null> => draftSlot.read(),
@@ -141,6 +147,23 @@ export function createRecordStore(storage: KeyValueStorage, notifier: Notifier) 
 
     async getRecord(id: string): Promise<CastRecord | null> {
       return (await recordSlot.read()).find((r) => r.id === id) ?? null;
+    },
+
+    /** 从备份里放回一条。已存在的不覆盖，回访未到期的重新排上提醒 */
+    async restore(raw: unknown): Promise<boolean> {
+      if (!isRecord(raw)) return false;
+      const existing = await recordSlot.read();
+      if (existing.some((r) => r.id === raw.id)) return false;
+      await recordSlot.write([raw, ...existing].sort((a, b) => b.createdAt - a.createdAt));
+      if (!raw.review && reviewDueAt(raw) > Date.now()) {
+        await notifier.schedule({
+          id: reminderIdOf(raw.id),
+          at: new Date(reviewDueAt(raw)),
+          title: '七日回访',
+          body: `「${raw.question}」这一卦，应验了吗？`,
+        });
+      }
+      return true;
     },
 
     /** 删掉一条卦记，同时撤掉它的回访提醒 */

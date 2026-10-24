@@ -2,6 +2,7 @@ import { castFromNumbers, type MeihuaCast } from '../core/meihua';
 import { CATEGORY_IDS, type Category } from '../data/guide';
 import { notifier as platformNotifier, type Notifier } from '../platform/notify';
 import { storage as platformStorage, type KeyValueStorage } from '../platform/storage';
+import { keepSlot } from './keep';
 import { newId, reminderIdOf, REVIEW_AFTER_MS, type Outcome, type Review } from './records';
 
 export type MeihuaSource = 'time' | 'number';
@@ -47,18 +48,10 @@ function isRecord(x: unknown): x is MeihuaRecord {
 }
 
 export function createMeihuaStore(storage: KeyValueStorage, notifier: Notifier) {
-  // 与卦记一样，写入失败时退回内存，保证本次使用不中断
-  let fallback: MeihuaRecord[] | null = null;
-
-  async function read(): Promise<MeihuaRecord[]> {
-    if (fallback) return fallback;
-    const raw = await storage.get<unknown>(KEY);
-    return Array.isArray(raw) ? raw.filter(isRecord) : [];
-  }
-
-  async function write(records: MeihuaRecord[]): Promise<void> {
-    fallback = (await storage.set(KEY, records)) ? null : records;
-  }
+  // 认不出来的条目原样留着，详见 keep.ts
+  const slot = keepSlot<MeihuaRecord>(storage, KEY, isRecord);
+  const read = async (): Promise<MeihuaRecord[]> => (await slot.read()).known;
+  const write = (records: MeihuaRecord[]): Promise<void> => slot.write(records);
 
   return {
     async add(input: Omit<MeihuaRecord, 'id' | 'createdAt'>, now = Date.now()): Promise<MeihuaRecord> {
@@ -79,6 +72,23 @@ export function createMeihuaStore(storage: KeyValueStorage, notifier: Notifier) 
 
     async get(id: string): Promise<MeihuaRecord | null> {
       return (await read()).find((r) => r.id === id) ?? null;
+    },
+
+    /** 从备份里放回一条。已存在的不覆盖，回访未到期的重新排上提醒 */
+    async restore(raw: unknown): Promise<boolean> {
+      if (!isRecord(raw)) return false;
+      const existing = await read();
+      if (existing.some((r) => r.id === raw.id)) return false;
+      await write([raw, ...existing].sort((a, b) => b.createdAt - a.createdAt));
+      if (!raw.review && reviewDueAt(raw) > Date.now()) {
+        await notifier.schedule({
+          id: reminderIdOf(raw.id),
+          at: new Date(reviewDueAt(raw)),
+          title: '七日回访',
+          body: `「${raw.question}」这一卦，应验了吗？`,
+        });
+      }
+      return true;
     },
 
     /** 删掉一条卦记，同时撤掉它的回访提醒 */
