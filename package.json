@@ -10,7 +10,8 @@
     "test:watch": "vitest",
     "lint": "oxlint",
     "preview": "vite preview",
-    "verify:text": "node scripts/verify-zhouyi.mjs"
+    "verify:text": "node scripts/verify-zhouyi.mjs",
+    "gen:widget": "node scripts/generate-widget-data.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",
