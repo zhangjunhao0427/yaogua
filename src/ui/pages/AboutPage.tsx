@@ -1,4 +1,5 @@
 import { PERSPECTIVES } from '../../data/guide';
+import { CONTACT_EMAIL, PRIVACY_URL } from '../../data/site';
 import { Screen } from '../components/Screen';
 
 const COIN_ROWS = [
@@ -163,8 +164,28 @@ export function AboutPage() {
         </section>
 
         <section>
+          <h2>免责声明</h2>
+          <p>
+            这里给出的是《周易》的经文和预先写好的白话解释，<strong>仅供参考与自省</strong>
+            ，不是针对你具体处境的专业判断，也不构成医疗、法律、财务、投资或心理方面的建议。
+          </p>
+          <p>
+            身体不适请及时就医，法律与财务上的决定请咨询有资质的人。不要依据卦象做出危及自身或他人安全、健康、财产的决定。应用不预测未来，也不保证任何结果。
+          </p>
+        </section>
+
+        <section>
           <h2>隐私</h2>
-          <p>不需要注册，不问出生时间，也不收集任何个人信息。你的问题和卦记只保存在这台设备上。</p>
+          <p>
+            不需要注册，不问出生时间，也不收集任何个人信息。你的问题和卦记只保存在这台设备上，不上传任何服务器——所以也请定期在「卦记 → 备份」里导出一份留着。
+          </p>
+          <p>
+            完整的
+            <a className="link" href={PRIVACY_URL} target="_blank" rel="noreferrer noopener">
+              隐私政策
+            </a>
+            。有问题或发现错字，欢迎来信 <a className="link" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>。
+          </p>
         </section>
       </div>
     </Screen>

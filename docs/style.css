@@ -1,0 +1,150 @@
+:root {
+  color-scheme: light dark;
+  --paper: #f4eee2;
+  --card: #fbf8f1;
+  --ink: #2a2521;
+  --ink-2: #5b5249;
+  --muted: #8a8075;
+  --rule: #dcd1bf;
+  --copper: #a45f2b;
+  --serif: 'Songti SC', 'STSong', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', serif;
+  --sans: system-ui, -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161411;
+    --card: #1f1c18;
+    --ink: #ece4d6;
+    --ink-2: #c2b8a9;
+    --muted: #938a7e;
+    --rule: #38322b;
+    --copper: #d88c4e;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 20px 72px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-text-size-adjust: 100%;
+}
+
+main {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+header {
+  padding: 56px 0 8px;
+  text-align: center;
+}
+
+.mark {
+  display: grid;
+  gap: 5px;
+  width: 64px;
+  margin: 0 auto 20px;
+}
+
+.mark span {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 8px;
+}
+
+.mark span i {
+  background: var(--ink);
+  border-radius: 1px;
+}
+
+.mark span.yang i {
+  grid-column: 1 / -1;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: 2rem;
+  letter-spacing: 0.2em;
+  margin: 0 0 6px;
+}
+
+h2 {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  margin: 2.5rem 0 0.6rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 1.6rem 0 0.3rem;
+}
+
+p,
+li {
+  color: var(--ink-2);
+}
+
+ul {
+  padding-left: 1.2em;
+}
+
+li {
+  margin: 0.3em 0;
+}
+
+a {
+  color: var(--copper);
+  text-underline-offset: 3px;
+}
+
+.lead {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 1.4rem 0;
+}
+
+.card p:first-child {
+  margin-top: 0;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+footer a {
+  margin: 0 0.6em;
+}

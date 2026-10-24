@@ -16,6 +16,7 @@ import {
 } from '../../store/meihua';
 import { OUTCOME_LABEL, type Outcome } from '../../store/records';
 import { cls } from '../cls';
+import { Caveat } from '../components/Caveat';
 import { DeleteButton } from '../components/DeleteButton';
 import { HexagramFigure } from '../components/HexagramFigure';
 import { Screen } from '../components/Screen';
@@ -161,6 +162,7 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
           }}
         />
       </div>
+      <Caveat />
     </Screen>
   );
 }

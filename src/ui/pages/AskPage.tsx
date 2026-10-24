@@ -78,6 +78,11 @@ export function AskPage() {
             {error.message}
           </p>
         )}
+        {category && categoryInfo(category).caution && (
+          <p className="small muted" role="status">
+            {categoryInfo(category).caution}
+          </p>
+        )}
       </div>
 
       <form className="stack" onSubmit={submit} noValidate>

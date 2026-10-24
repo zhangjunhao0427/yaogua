@@ -12,6 +12,8 @@ export interface CategoryInfo {
   /** 输入框的例句提示 */
   readonly hint: string;
   readonly reflection: string;
+  /** 这一类容易被当成专业判断，选中时当场提醒一句 */
+  readonly caution?: string;
 }
 
 export const CATEGORIES: readonly CategoryInfo[] = [
@@ -44,12 +46,14 @@ export const CATEGORIES: readonly CategoryInfo[] = [
     label: '健康',
     hint: '例如：这个毛病反复发作，我该如何对待？',
     reflection: '身体给过你哪些信号？经文说的那个姿态，落到作息和就医上会是什么？',
+    caution: '卦能帮你理清态度，不能替代诊断。身体上的具体症状，请先去看医生。',
   },
   {
     id: 'money',
     label: '钱财',
     hint: '例如：这笔钱要不要投，我该如何判断？',
     reflection: '最坏的情况你能不能承受？经文提示的是进、是守，还是先退？',
+    caution: '卦不预测涨跌，也不是投资建议。真要下注，先算清楚最坏的情况你能不能承受。',
   },
   {
     id: 'study',

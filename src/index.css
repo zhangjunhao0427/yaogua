@@ -1117,3 +1117,15 @@ a {
   gap: 2px;
   align-items: center;
 }
+
+/* 解读页末尾的免责提醒 */
+.caveat {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.link {
+  color: var(--copper);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

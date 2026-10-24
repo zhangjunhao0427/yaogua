@@ -17,6 +17,7 @@ import {
   type Outcome,
 } from '../../store/records';
 import { cls } from '../cls';
+import { Caveat } from '../components/Caveat';
 import { DeleteButton } from '../components/DeleteButton';
 import { HexagramFigure } from '../components/HexagramFigure';
 import { Screen } from '../components/Screen';
@@ -197,6 +198,7 @@ function Reading({
               }}
             />
           </div>
+          <Caveat />
         </>
       )}
     </Screen>
