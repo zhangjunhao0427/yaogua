@@ -60,12 +60,21 @@ resources/   icon.png 1024² 与 splash.png 2732²，由 scripts 生成，@capac
 - 改 web 代码后要 `npm run build && npx cap sync ios`，原生壳才拿到新资源
 - `ios/App/App/PrivacyInfo.xcprivacy` 已挂进工程资源阶段，新增用到 Required Reason API
   的插件时要同步更新
+- 对外网址在 `src/data/site.ts`，内容是仓库 `docs/` 下的两页静态 HTML，由 GitHub Pages 发布：
+  支持页 https://zhangjunhao0427.github.io/yaogua/ ，隐私政策 https://zhangjunhao0427.github.io/yaogua/privacy.html 。
+  改了 docs/ 推上去即生效；三处（App Store Connect 的支持网址与隐私政策网址、site.ts）必须一致
+- 免责声明出现在三处：立问选「健康」「钱财」时的提醒、两个解读页末尾的 `Caveat`、
+  起卦说明的「免责声明」一节。这是审核会看的内容，不要删
 
 ## 待办（按优先级）
 
-1. iOS 工程已生成（`ios/`），待 Xcode 装好后模拟器验证，再配证书与云端构建工作流
-2. 可选升级：接模型按用户原话实时生成解读（现在的分类落点是预写的静态方案，已覆盖 450×4 条）。送模型时必须带爻辞原文，否则模型是在编
-3. 分享卡片在 iOS 上走 Capacitor Share 的文件分享；Web 端已做「保存图片」兜底
+1. GitHub Pages 还没打开过：仓库 Settings → Pages，Source 选 main 分支的 `/docs`。
+   打开一次之后，以后改 docs/ 推上去就自动发布
+2. 配证书与云端构建：App Store Connect API 密钥 + GitHub Actions 的 macOS runner，
+   这样最终能在 Windows 上发版，证书不绑在某台机器上
+3. 功能已在 iOS 模拟器实测通过（起卦、解读、删除、备份导出与恢复、原生分享面板）
+4. 可选升级：接模型按用户原话实时生成解读（现在的分类落点是预写的静态方案，已覆盖 450×8 条）。送模型时必须带爻辞原文，否则模型是在编
+5. 安卓工程尚未生成；iPad 是否支持待定；界面字号大量写死 px，还没跟随系统字号
 
 ## 命令
 
