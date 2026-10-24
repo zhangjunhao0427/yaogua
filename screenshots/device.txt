@@ -1,0 +1,3 @@
+    iPhone 17 Pro (E952A9B0-CC78-435C-BF08-06AD47FE1076) (Booted) 
+Xcode 16.4
+Build version 16F6
