@@ -4,7 +4,8 @@ import { lineTitle } from '../../core/hexagram';
 import { ELEMENT_OF, NUMBER_BY_TRIGRAM, type MeihuaCast } from '../../core/meihua';
 import type { Hexagram } from '../../core/types';
 import { categoryInfo } from '../../data/guide';
-import { hexagramFullName, hexagramName } from '../../i18n/names';
+import { pack, t } from '../../i18n';
+import { hexagramFullName, hexagramName, trigramName } from '../../i18n/names';
 import { RELATION_LORE, STAGE_LORE, TRIGRAM_LORE } from '../../data/meihua';
 import { hexagramText, resolveText } from '../../data/zhouyi';
 import {
@@ -39,14 +40,14 @@ export function MeihuaReadingPage() {
     };
   }, [id]);
 
-  if (record === undefined) return <Screen title="梅花易数" back="/records" />;
+  if (record === undefined) return <Screen title={t('梅花易数')} back="/records" />;
   if (record === null) {
     return (
-      <Screen title="梅花易数" back="/">
+      <Screen title={t('梅花易数')} back="/">
         <div className="empty">
-          <p className="muted">找不到这一卦。</p>
+          <p className="muted">{t('找不到这一卦。')}</p>
           <Link className="btn" to="/">
-            回首页
+            {t('回首页')}
           </Link>
         </div>
       </Screen>
@@ -65,12 +66,12 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
   const text = resolveText({ kind: 'line', hexagram: cast.origin.number, line: cast.moving }, record.category);
 
   return (
-    <Screen title="梅花易数" back="/records" className="reading">
+    <Screen title={t('梅花易数')} back="/records" className="reading">
       <section className="card">
         <p className="eyebrow">
           {formatDateTime(record.createdAt)}
-          {category && ` · ${category.label}`}
-          {record.source === 'time' ? ' · 时间起卦' : ' · 数字起卦'}
+          {category && ` · ${t(category.label)}`}
+          {record.source === 'time' ? ` · ${t('时间起卦')}` : ` · ${t('数字起卦')}`}
         </p>
         <p className="question__text serif">「{record.question}」</p>
         <p className="small muted">
@@ -81,34 +82,49 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
             </>
           ) : (
             <>
-              取数 {record.numbers[0]} 与 {record.numbers[1]}
+              {t('取数 {a} 与 {b}', { a: record.numbers[0], b: record.numbers[1] })}
               <br />
             </>
           )}
-          {`上卦 ${NUMBER_BY_TRIGRAM[cast.upper]} ${cast.upper}、下卦 ${NUMBER_BY_TRIGRAM[cast.lower]} ${cast.lower}，动爻 ${movingTitle}`}
+          {t('上卦 {un} {upper}、下卦 {ln} {lower}，动爻 {moving}', {
+            un: NUMBER_BY_TRIGRAM[cast.upper],
+            upper: trigramName(cast.upper),
+            ln: NUMBER_BY_TRIGRAM[cast.lower],
+            lower: trigramName(cast.lower),
+            moving: t(movingTitle),
+          })}
         </p>
       </section>
 
       {/* 体用是梅花的断语所在，放在最前 */}
       <section className={cls('card verdict-card', `verdict-card--${relation.verdict}`)}>
-        <p className="eyebrow">体用生克</p>
+        <p className="eyebrow">{t('体用生克')}</p>
         <p className="verdict-card__line serif">
-          体 {cast.body}（{ELEMENT_OF[cast.body]}）· 用 {cast.use}（{ELEMENT_OF[cast.use]}）
+          {t('体 {body}（{bodyElement}）· 用 {use}（{useElement}）', {
+            body: trigramName(cast.body),
+            bodyElement: t(ELEMENT_OF[cast.body]),
+            use: trigramName(cast.use),
+            useElement: t(ELEMENT_OF[cast.use]),
+          })}
         </p>
         <p className="verdict-card__head serif">
-          {relation.label}
-          <span className="verdict-card__tag">{relation.verdict}</span>
+          {t(relation.label)}
+          <span className="verdict-card__tag">{t(relation.verdict)}</span>
         </p>
-        <p className="brief__text">{relation.meaning}</p>
+        <p className="brief__text">{t(relation.meaning)}</p>
         <p className="small muted">
-          动爻在{cast.movingIn === 'upper' ? '上' : '下'}卦，所以{cast.use}为用、{cast.body}为体。
-          体是你自己，用是所问的那件事。
+          {t(cast.movingIn === 'upper' ? '动爻在上卦，所以{use}为用、{body}为体。' : '动爻在下卦，所以{use}为用、{body}为体。', {
+            use: trigramName(cast.use),
+            body: trigramName(cast.body),
+          })}{' '}
+          {t('体是你自己，用是所问的那件事。')}
         </p>
       </section>
 
       <section className="layer">
         <h2 className="layer__title">
-          <span className="layer__no serif">一</span>三卦
+          <span className="layer__no serif">{t('一二三四')[0]}</span>
+          {t('三卦')}
         </h2>
         <div className="stages">
           <Stage hexagram={cast.origin} stage={0} moving={cast.moving} />
@@ -119,41 +135,43 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
 
       <section className="layer">
         <h2 className="layer__title">
-          <span className="layer__no serif">二</span>两卦之象
+          <span className="layer__no serif">{t('一二三四')[1]}</span>
+          {t('两卦之象')}
         </h2>
         <div className="stack">
-          <TrigramCard name={cast.body} role="体：你自己" />
-          <TrigramCard name={cast.use} role="用：所问之事" />
+          <TrigramCard name={cast.body} role={t('体：你自己')} />
+          <TrigramCard name={cast.use} role={t('用：所问之事')} />
         </div>
       </section>
 
       <section className="layer">
         <h2 className="layer__title">
-          <span className="layer__no serif">三</span>动爻爻辞
+          <span className="layer__no serif">{t('一二三四')[2]}</span>
+          {t('动爻爻辞')}
         </h2>
         <article className="card passage passage--main">
           <header className="passage__head">
             <span>
               {hexagramName(cast.origin.number)} · {text.title}
             </span>
-            <span className="badge badge--accent">动爻</span>
+            <span className="badge badge--accent">{t('动爻')}</span>
           </header>
           <p className="passage__original serif">{text.original}</p>
           <p className="passage__plain">{text.plain}</p>
           {text.angle && (
             <p className="passage__angle">
-              <span className="passage__angle-label">{category?.label}</span>
+              <span className="passage__angle-label">{category && t(category.label)}</span>
               {text.angle}
             </p>
           )}
         </article>
-        <p className="small muted">梅花以体用为主、爻辞为辅。两者不一致时，先看体用。</p>
+        <p className="small muted">{t('梅花以体用为主、爻辞为辅。两者不一致时，先看体用。')}</p>
       </section>
 
       <ReviewSection record={record} onChange={onChange} />
       <div className="actions">
         <Link className="btn btn--text" to="/">
-          回首页
+          {t('回首页')}
         </Link>
         <DeleteButton
           onDelete={async () => {
@@ -172,7 +190,7 @@ function Stage({ hexagram, stage, moving }: { hexagram: Hexagram; stage: 0 | 1 |
   return (
     <section className="card stage-card">
       <p className="eyebrow">
-        {lore.label} · {lore.role}
+        {t(lore.label)} · {t(lore.role)}
       </p>
       <div className="stage-card__body">
         <HexagramFigure
@@ -193,23 +211,24 @@ function Stage({ hexagram, stage, moving }: { hexagram: Hexagram; stage: 0 | 1 |
   );
 }
 
-function TrigramCard({ name, role }: { name: ReturnType<typeof String> & keyof typeof TRIGRAM_LORE; role: string }) {
-  const lore = TRIGRAM_LORE[name];
+function TrigramCard({ name, role }: { name: TrigramName; role: string }) {
+  const lore = pack().trigramLore[name];
+  const element = TRIGRAM_LORE[name].element;
   return (
     <section className="card">
       <p className="eyebrow">{role}</p>
       <p className="brief__name serif">
-        {lore.name}为{lore.image}
+        {t('{name}为{image}', { name: trigramName(name), image: lore.image })}
         <span className="brief__theme">
-          {lore.element} · {lore.nature}
+          {t(element)} · {lore.nature}
         </span>
       </p>
       <dl className="terms">
-        <dt>人</dt>
+        <dt>{t('人')}</dt>
         <dd>{lore.person}</dd>
-        <dt>身</dt>
+        <dt>{t('身')}</dt>
         <dd>{lore.body}</dd>
-        <dt>物</dt>
+        <dt>{t('物')}</dt>
         <dd>{lore.thing}</dd>
       </dl>
     </section>
@@ -224,8 +243,8 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
   if (record.review) {
     return (
       <section className="card review">
-        <p className="eyebrow">回访 · {formatDate(record.review.at)}</p>
-        <p className="review__outcome serif">{OUTCOME_LABEL[record.review.outcome]}</p>
+        <p className="eyebrow">{t('回访 · {date}', { date: formatDate(record.review.at) })}</p>
+        <p className="review__outcome serif">{t(OUTCOME_LABEL[record.review.outcome])}</p>
         {record.review.note && <p className="muted">{record.review.note}</p>}
       </section>
     );
@@ -234,8 +253,8 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
   if (!isReviewDue(record)) {
     return (
       <section className="card review">
-        <p className="eyebrow">回访</p>
-        <p className="muted">{formatDate(reviewDueAt(record))}起回来记下：这一卦应验了吗？</p>
+        <p className="eyebrow">{t('回访')}</p>
+        <p className="muted">{t('{date}起回来记下：这一卦应验了吗？', { date: formatDate(reviewDueAt(record)) })}</p>
       </section>
     );
   }
@@ -250,9 +269,9 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
 
   return (
     <section className="card review">
-      <p className="eyebrow">七日已过</p>
-      <p>这一卦，应验了吗？</p>
-      <div className="chips" role="group" aria-label="应验情况">
+      <p className="eyebrow">{t('七日已过')}</p>
+      <p>{t('这一卦，应验了吗？')}</p>
+      <div className="chips" role="group" aria-label={t('应验情况')}>
         {OUTCOMES.map((o) => (
           <button
             key={o}
@@ -261,7 +280,7 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
             aria-pressed={outcome === o}
             onClick={() => setOutcome(o)}
           >
-            {OUTCOME_LABEL[o]}
+            {t(OUTCOME_LABEL[o])}
           </button>
         ))}
       </div>
@@ -270,8 +289,8 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
         rows={3}
         maxLength={500}
         value={note}
-        placeholder="后来发生了什么？（可不填）"
-        aria-label="回访记录"
+        placeholder={t('后来发生了什么？（可不填）')}
+        aria-label={t('回访记录')}
         onChange={(e) => setNote(e.target.value)}
       />
       <button
@@ -280,7 +299,7 @@ function ReviewSection({ record, onChange }: { record: MeihuaRecord; onChange: (
         disabled={!outcome || saving}
         onClick={() => void save()}
       >
-        记下
+        {t('记下')}
       </button>
     </section>
   );

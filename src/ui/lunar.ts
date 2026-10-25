@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 /**
  * 农历换算，用系统自带的中国历（ICU），不自己维护农历表。
  * 梅花时间起卦要的是农历年支、月、日与时辰地支。
@@ -77,9 +78,17 @@ export function lunarOf(date: Date): LunarDate {
     day: parts.day,
     hourBranch,
     leapMonth,
-    label:
-      `${stem}${EARTHLY_BRANCHES[branchIndex]}年` +
-      `${leapMonth ? '闰' : ''}${MONTHS[month - 1]}月${dayLabel(parts.day)}` +
-      ` ${EARTHLY_BRANCHES[hourBranch - 1]}时`,
+    // 各语言的模板各取所需：中文用干支与「正月初五」，其余语言可以只用数字
+    label: t('{stem}{branch}年{leap}{monthName}月{dayName} {hourName}时', {
+      stem,
+      branch: EARTHLY_BRANCHES[branchIndex],
+      leap: leapMonth ? t('闰') : '',
+      month,
+      monthName: MONTHS[month - 1],
+      day: parts.day,
+      dayName: dayLabel(parts.day),
+      hour: hourBranch,
+      hourName: EARTHLY_BRANCHES[hourBranch - 1],
+    }),
   };
 }

@@ -1,8 +1,8 @@
 import { hexagramByNumber } from '../../core/hexagram';
 import type { TextRef } from '../../core/types';
 import { pack } from '../../i18n';
-import type { Category } from '../guide';
-import { angleIndex, type MergedAngles } from './angles';
+import { ANGLE_CATEGORY_IDS, type Category } from '../guide';
+import type { MergedAngles } from './angles';
 import type { HexagramText } from './types';
 
 export type { HexagramText, LinePassage, Passage } from './types';
@@ -22,22 +22,28 @@ export function hexagramText(n: number): HexagramText {
   return pack().zhouyi[hexagramByNumber(n).number - 1];
 }
 
-/** 当前语言的分类落点 */
-export function anglesOf(n: number): MergedAngles {
-  return pack().angles[hexagramByNumber(n).number - 1];
+/** 当前语言的分类落点；这种语言还没译落点时为 null */
+export function anglesOf(n: number): MergedAngles | null {
+  const angles = pack().angles;
+  return angles ? angles[hexagramByNumber(n).number - 1] : null;
+}
+
+/** 「其他」没有落点，返回 -1 */
+function angleIndex(category: Category): number {
+  return ANGLE_CATEGORY_IDS.indexOf(category as never);
 }
 
 /** 「其他」没有对应的列，退回 null，由界面只显示通用白话 */
-function angleFor(angles: readonly string[], category?: Category | null): string | null {
-  if (!category) return null;
+function angleFor(angles: readonly string[] | undefined, category?: Category | null): string | null {
+  if (!category || !angles) return null;
   const column = angleIndex(category);
   return column < 0 ? null : (angles[column] ?? null);
 }
 
 function extraOf(n: number, category?: Category | null): ResolvedText {
   const extra = hexagramText(n).extra;
-  const angles = anglesOf(n).extra;
-  if (!extra || !angles) throw new Error(`第 ${n} 卦没有用九用六`);
+  const angles = anglesOf(n)?.extra;
+  if (!extra) throw new Error(`第 ${n} 卦没有用九用六`);
   const [title, original, plain] = extra;
   return { hexagram: n, title, original, plain, angle: angleFor(angles, category) };
 }
@@ -52,7 +58,7 @@ export function resolveText(ref: TextRef, category?: Category | null): ResolvedT
         title: '卦辞',
         original,
         plain,
-        angle: angleFor(anglesOf(ref.hexagram).judgment, category),
+        angle: angleFor(anglesOf(ref.hexagram)?.judgment, category),
       };
     }
     case 'line': {
@@ -62,7 +68,7 @@ export function resolveText(ref: TextRef, category?: Category | null): ResolvedT
         title,
         original,
         plain,
-        angle: angleFor(anglesOf(ref.hexagram).lines[ref.line], category),
+        angle: angleFor(anglesOf(ref.hexagram)?.lines[ref.line], category),
       };
     }
     case 'useNine':

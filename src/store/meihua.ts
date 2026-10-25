@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { castFromNumbers, type MeihuaCast } from '../core/meihua';
 import { CATEGORY_IDS, type Category } from '../data/guide';
 import { notifier as platformNotifier, type Notifier } from '../platform/notify';
@@ -60,8 +61,8 @@ export function createMeihuaStore(storage: KeyValueStorage, notifier: Notifier) 
       await notifier.schedule({
         id: reminderIdOf(record.id),
         at: new Date(reviewDueAt(record)),
-        title: '七日回访',
-        body: `「${record.question}」这一卦，应验了吗？`,
+        title: t('七日回访'),
+        body: t('「{question}」这一卦，应验了吗？', { question: record.question }),
       });
       return record;
     },
@@ -84,8 +85,8 @@ export function createMeihuaStore(storage: KeyValueStorage, notifier: Notifier) 
         await notifier.schedule({
           id: reminderIdOf(raw.id),
           at: new Date(reviewDueAt(raw)),
-          title: '七日回访',
-          body: `「${raw.question}」这一卦，应验了吗？`,
+          title: t('七日回访'),
+          body: t('「{question}」这一卦，应验了吗？', { question: raw.question }),
         });
       }
       return true;

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { t } from '../../i18n';
 import { hexagramName } from '../../i18n/names';
 import { entryDue, entryFigure, entryHexagrams, entryHref, type Entry } from '../../store/entries';
 import { OUTCOME_LABEL } from '../../store/records';
@@ -12,7 +13,7 @@ export function RecordItem({ entry, onDelete }: { entry: Entry; onDelete?: () =>
   const { from, to } = entryHexagrams(entry);
   const due = entryDue(entry);
   const review = entry.record.review;
-  const status = review ? OUTCOME_LABEL[review.outcome] : due ? '待回访' : null;
+  const status = review ? t(OUTCOME_LABEL[review.outcome]) : due ? t('待回访') : null;
 
   return (
     <li className="record-row">
@@ -21,13 +22,13 @@ export function RecordItem({ entry, onDelete }: { entry: Entry; onDelete?: () =>
         <span className="record__body">
           <span className="record__question">{entry.record.question}</span>
           <span className="record__meta">
-            {formatDate(entry.createdAt)} · {entry.kind === 'coin' ? '铜钱' : '梅花'} · {hexagramName(from)}
-            {to !== null && ` 之 ${hexagramName(to)}`}
+            {formatDate(entry.createdAt)} · {entry.kind === 'coin' ? t('铜钱') : t('梅花')} ·{' '}
+            {to === null ? hexagramName(from) : t('{from} 之 {to}', { from: hexagramName(from), to: hexagramName(to) })}
           </span>
         </span>
         {status && !onDelete && <span className={cls('badge', due && 'badge--accent')}>{status}</span>}
       </Link>
-      {onDelete && <DeleteButton compact label="删除" confirmLabel="确定？" onDelete={onDelete} />}
+      {onDelete && <DeleteButton compact label={t('删除')} confirmLabel={t('确定？')} onDelete={onDelete} />}
     </li>
   );
 }

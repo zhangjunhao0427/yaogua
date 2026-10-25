@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { castLine, isChanging, isYang, LINE_NAME } from '../../core/coin';
 import { lineTitle } from '../../core/hexagram';
 import type { Line, LineIndex, Toss } from '../../core/types';
+import { t } from '../../i18n';
 import { hexagramFullName } from '../../i18n/names';
 import { haptics } from '../../platform/haptics';
 import { motion } from '../../platform/motion';
@@ -193,7 +194,7 @@ export function CastPage() {
     if (e.detail === 0) void release();
   }
 
-  if (!draft) return <Screen title="摇卦" />;
+  if (!draft) return <Screen title={t('摇卦')} />;
 
   const formed = draft.lines.slice(0, shown);
   const yang = formed.map((l) => isYang(l.value));
@@ -202,18 +203,18 @@ export function CastPage() {
   const settled = phase === 'idle' || phase === 'charging' || phase === 'complete';
 
   return (
-    <Screen title="摇卦" back="/" className="cast">
+    <Screen title={t('摇卦')} back="/" className="cast">
       <p className="cast__question serif">「{draft.question}」</p>
 
       <div className="cast__figure">
-        <HexagramFigure yang={yang} changing={changing} size="lg" slots animateLast label={`已得 ${shown} 爻`} />
+        <HexagramFigure yang={yang} changing={changing} size="lg" slots animateLast label={t('已得 {n} 爻', { n: shown })} />
       </div>
 
       <button
         type="button"
         className={cls('stage', `is-${phase}`)}
         disabled={phase === 'complete'}
-        aria-label={phase === 'complete' ? '六爻已成' : `掷铜钱，第 ${Math.min(shown + 1, 6)} 爻`}
+        aria-label={phase === 'complete' ? t('六爻已成') : t('掷铜钱，第 {n} 爻', { n: Math.min(shown + 1, 6) })}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
@@ -253,16 +254,16 @@ export function CastPage() {
         <Complete record={record} />
       ) : (
         <div className="cast__hints">
-          <p>长按铜钱蓄力，松手掷出；轻点也可以。</p>
+          <p>{t('长按铜钱蓄力，松手掷出；轻点也可以。')}</p>
           {motion.isSupported() &&
             (shakeOn ? (
-              <p>也可以摇动手机。</p>
+              <p>{t('也可以摇动手机。')}</p>
             ) : (
               <button type="button" className="btn btn--text" onClick={() => void enableShake()}>
-                {shakeDenied ? '摇一摇未获授权，点此重试' : '开启摇一摇'}
+                {shakeDenied ? t('摇一摇未获授权，点此重试') : t('开启摇一摇')}
               </button>
             ))}
-          <p className="cast__rule">卦不可重：每掷一爻即刻记下，无法重摇。</p>
+          <p className="cast__rule">{t('卦不可重：每掷一爻即刻记下，无法重摇。')}</p>
         </div>
       )}
     </Screen>
@@ -273,34 +274,34 @@ function LineResult({ line, index }: { line: Line; index: LineIndex }) {
   const changing = isChanging(line.value);
   return (
     <>
-      <strong>{lineTitle(index, isYang(line.value))}</strong>
+      <strong>{t(lineTitle(index, isYang(line.value)))}</strong>
       {'　'}
-      {line.toss.map((c) => FACE_NAME[c]).join(' ')} · {line.toss.join('+')}＝{line.value} ·{' '}
+      {line.toss.map((c) => t(FACE_NAME[c])).join(' ')} · {line.toss.join('+')}＝{line.value} ·{' '}
       <span className={cls(changing && 'is-changing')}>
-        {LINE_NAME[line.value]}
-        {changing && '（变）'}
+        {t(LINE_NAME[line.value])}
+        {changing && t('（变）')}
       </span>
     </>
   );
 }
 
 function Complete({ record }: { record: CastRecord | null }) {
-  if (!record) return <p className="muted center">成卦中…</p>;
+  if (!record) return <p className="muted center">{t('成卦中…')}</p>;
   const cast = castOf(record);
   return (
     <div className="complete">
-      <p className="eyebrow">六爻已成</p>
+      <p className="eyebrow">{t('六爻已成')}</p>
       <p className="complete__name serif">
         {hexagramFullName(cast.base.number)}
         {cast.changed && (
           <>
-            <span className="muted"> 之 </span>
+            <span className="muted">{t(' 之 ')}</span>
             {hexagramFullName(cast.changed.number)}
           </>
         )}
       </p>
       <Link className="btn btn--primary btn--block" to={`/r/${record.id}?fresh=1`}>
-        看解读
+        {t('看解读')}
       </Link>
     </div>
   );

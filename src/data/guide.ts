@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 // 立问与解读的引导文案（本项目原创）
 
 /** 有分类落点的八个方向，顺序与 angles 数据的列一一对应，不可调换 */
@@ -98,14 +99,17 @@ export function reflectionPrompts(
   names: { readonly base: string; readonly changed: string | null },
 ): string[] {
   const prompts = [
-    '读到的这句话里，哪个词最先触动你？它让你想到了问题里的哪个具体处境？',
+    t('读到的这句话里，哪个词最先触动你？它让你想到了问题里的哪个具体处境？'),
     names.changed
-      ? `从「${names.base}」到「${names.changed}」，变化的方向是什么？你愿意往那边走吗？`
-      : `「${names.base}」六爻不变，眼下的局面会持续一阵。在不变之中，你能先做好的一件事是什么？`,
+      ? t('从「{base}」到「{changed}」，变化的方向是什么？你愿意往那边走吗？', {
+          base: names.base,
+          changed: names.changed,
+        })
+      : t('「{base}」六爻不变，眼下的局面会持续一阵。在不变之中，你能先做好的一件事是什么？', { base: names.base }),
   ];
   const info = CATEGORIES.find((c) => c.id === category);
-  if (info) prompts.push(info.reflection);
-  prompts.push('先把答案放一放。七天后回来看，你希望那时的自己做了什么？');
+  if (info) prompts.push(t(info.reflection));
+  prompts.push(t('先把答案放一放。七天后回来看，你希望那时的自己做了什么？'));
   return prompts;
 }
 

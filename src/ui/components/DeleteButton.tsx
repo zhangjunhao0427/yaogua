@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { t } from '../../i18n';
 import { cls } from '../cls';
 
 interface DeleteButtonProps {
@@ -12,8 +13,8 @@ interface DeleteButtonProps {
 /** 点第一次进入待确认，再点才删；四秒内没有再点就复位，免得误触 */
 export function DeleteButton({
   onDelete,
-  label = '删除这一卦',
-  confirmLabel = '确定删除？',
+  label = t('删除这一卦'),
+  confirmLabel = t('确定删除？'),
   compact = false,
 }: DeleteButtonProps) {
   const [armed, setArmed] = useState(false);
@@ -47,7 +48,7 @@ export function DeleteButton({
       aria-label={armed ? confirmLabel : label}
       onClick={() => void click()}
     >
-      {busy ? '删除中…' : armed ? confirmLabel : label}
+      {busy ? t('删除中…') : armed ? confirmLabel : label}
     </button>
   );
 }

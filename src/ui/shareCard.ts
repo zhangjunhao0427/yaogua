@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 // 分享卡片：用 Canvas 直接画爻线，不依赖卦符字体
 
 export interface ShareCardInput {
@@ -70,7 +71,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('无法创建画布');
+  if (!ctx) throw new Error(t('卡片生成失败，稍后再试'));
 
   ctx.fillStyle = COLOR.paper;
   ctx.fillRect(0, 0, W, H);
@@ -81,7 +82,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
   ctx.textAlign = 'left';
   ctx.fillStyle = COLOR.ink;
   ctx.font = `600 40px ${SERIF}`;
-  ctx.fillText('摇卦', PAD, 168);
+  ctx.fillText(t('摇卦'), PAD, 168);
   ctx.textAlign = 'right';
   ctx.fillStyle = COLOR.muted;
   ctx.font = `28px ${SANS}`;
@@ -99,7 +100,7 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
     drawFigure(ctx, centers[1], figureTop, input.changed.yang, []);
     ctx.fillStyle = COLOR.muted;
     ctx.font = `36px ${SERIF}`;
-    ctx.fillText('之', W / 2, figureTop + FIGURE_H / 2 + 12);
+    ctx.fillText(t('之'), W / 2, figureTop + FIGURE_H / 2 + 12);
   }
 
   const nameY = figureTop + FIGURE_H + 76;
@@ -121,9 +122,9 @@ export async function renderShareCard(input: ShareCardInput): Promise<Blob> {
 
   ctx.fillStyle = COLOR.muted;
   ctx.font = `26px ${SANS}`;
-  ctx.fillText('铜钱法起卦 · 卦不可重', W / 2, H - 92);
+  ctx.fillText(t('铜钱法起卦 · 卦不可重'), W / 2, H - 92);
 
   return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('生成图片失败'))), 'image/png'),
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error(t('卡片生成失败，稍后再试')))), 'image/png'),
   );
 }

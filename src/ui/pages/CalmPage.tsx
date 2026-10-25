@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { t } from '../../i18n';
 import { recordStore } from '../../store/records';
 import { cls } from '../cls';
 import { Screen } from '../components/Screen';
@@ -28,12 +29,12 @@ export function CalmPage() {
     <Screen className="calm">
       <div className={cls('breath', !reduced && 'breath--animate')} aria-hidden="true" />
       <p className="calm__cue serif" aria-live="polite">
-        {left > 1 ? '吸气' : '呼气'}
+        {left > 1 ? t('吸气') : t('呼气')}
       </p>
       {draft && <p className="calm__question serif">「{draft.question}」</p>}
-      <p className="small muted">放下手边的事，把心思放回这个问题上。</p>
+      <p className="small muted">{t('放下手边的事，把心思放回这个问题上。')}</p>
       <button type="button" className="btn btn--text" onClick={() => navigate('/cast', { replace: true })}>
-        跳过
+        {t('跳过')}
       </button>
     </Screen>
   );

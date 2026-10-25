@@ -1,18 +1,8 @@
-import { createContext, use, useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { settingsStore } from '../store/settings';
+import { LangContext } from './context';
 import { activateLang, currentLang } from './index';
 import { detectLang, LANG_TAG, type Lang } from './lang';
-
-interface LangContextValue {
-  readonly lang: Lang;
-  readonly change: (lang: Lang) => Promise<void>;
-}
-
-const LangContext = createContext<LangContextValue>({ lang: 'zh', change: async () => {} });
-
-export function useLang(): LangContextValue {
-  return use(LangContext);
-}
 
 function browserLangs(): readonly string[] {
   if (typeof navigator === 'undefined') return [];

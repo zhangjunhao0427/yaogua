@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { t } from '../../i18n';
 import { entryDue, entryHref, listEntries } from '../../store/entries';
 import { recordStore } from '../../store/records';
 import { HexagramFigure } from '../components/HexagramFigure';
@@ -19,11 +20,11 @@ export function HomePage() {
     <Screen className="home">
       <div className="hero">
         <HexagramFigure yang={HERO} marks={false} />
-        <h1 className="hero__title serif">摇卦</h1>
+        <h1 className="hero__title serif">{t('摇卦')}</h1>
         <p className="hero__sub">
-          三枚铜钱，六次掷出。
+          {t('三枚铜钱，六次掷出。')}
           <br />
-          卦不可重。
+          {t('卦不可重。')}
         </p>
       </div>
 
@@ -31,32 +32,32 @@ export function HomePage() {
         (draft ? (
           <div className="stack">
             <Link className="btn btn--primary btn--block" to="/cast">
-              继续摇卦 · 已得 {draft.lines.length} 爻
+              {t('继续摇卦 · 已得 {n} 爻', { n: draft.lines.length })}
             </Link>
             <p className="small muted center">「{draft.question}」</p>
           </div>
         ) : (
           <div className="stack">
             <Link className="btn btn--primary btn--block" to="/ask">
-              摇铜钱起卦
+              {t('摇铜钱起卦')}
             </Link>
             <Link className="btn btn--block" to="/meihua">
-              梅花易数
+              {t('梅花易数')}
             </Link>
-            <p className="small muted center">铜钱法六爻可变，梅花按时间或数起卦、只动一爻。</p>
+            <p className="small muted center">{t('铜钱法六爻可变，梅花按时间或数起卦、只动一爻。')}</p>
           </div>
         ))}
 
       {due.length > 0 && (
         <Link className="card notice" to={entryHref(due[0])}>
-          <span>{due.length} 卦已满七日，回来看看应验了没有</span>
+          <span>{t('{n} 卦已满七日，回来看看应验了没有', { n: due.length })}</span>
           <span aria-hidden="true">›</span>
         </Link>
       )}
 
       {entries && entries.length > 0 && (
         <section>
-          <h2 className="section-title">最近卦记</h2>
+          <h2 className="section-title">{t('最近卦记')}</h2>
           <ul className="records">
             {entries.slice(0, 3).map((entry) => (
               <RecordItem key={`${entry.kind}-${entry.id}`} entry={entry} />
@@ -66,8 +67,8 @@ export function HomePage() {
       )}
 
       <nav className="home__nav">
-        <Link to="/records">全部卦记</Link>
-        <Link to="/about">起卦说明</Link>
+        <Link to="/records">{t('全部卦记')}</Link>
+        <Link to="/about">{t('起卦说明')}</Link>
       </nav>
 
       <LanguagePicker />

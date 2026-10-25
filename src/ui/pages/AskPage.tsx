@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { t } from '../../i18n';
 import { CATEGORIES, categoryInfo, isClosedQuestion, type Category, type CategoryInfo } from '../../data/guide';
 import { recordStore } from '../../store/records';
 import { cls } from '../cls';
@@ -32,12 +33,12 @@ export function AskPage() {
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!category) {
-      setError({ field: 'category', message: '先选一个方向，解读会按它来写' });
+      setError({ field: 'category', message: t('先选一个方向，解读会按它来写') });
       return;
     }
     const q = question.trim();
     if (!q) {
-      setError({ field: 'question', message: '先写下你想问的事' });
+      setError({ field: 'question', message: t('先写下你想问的事') });
       inputRef.current?.focus();
       return;
     }
@@ -49,17 +50,18 @@ export function AskPage() {
   const closed = !error && isClosedQuestion(question);
 
   return (
-    <Screen title="立问" back="/">
+    <Screen title={t('立问')} back="/">
       <div className="stack stack--lg">
-        <h2 className="ask__title serif">你想问什么？</h2>
-        <p className="muted">问「我该如何」，而不是「会不会」。卦更擅长回答怎么做，而不是替你预言结果。</p>
+        <h2 className="ask__title serif">{t('你想问什么？')}</h2>
+        <p className="muted">{t('问「我该如何」，而不是「会不会」。卦更擅长回答怎么做，而不是替你预言结果。')}</p>
       </div>
 
       <div className="stack">
         <p className="field-label">
-          这件事属于哪一类？<span className="muted">必选，解读会按它来写</span>
+          {t('这件事属于哪一类？')}
+          <span className="muted">{t('必选，解读会按它来写')}</span>
         </p>
-        <div className="chips" role="radiogroup" aria-label="问题分类">
+        <div className="chips" role="radiogroup" aria-label={t('问题分类')}>
           {CATEGORIES.map((c) => (
             <button
               key={c.id}
@@ -69,7 +71,7 @@ export function AskPage() {
               aria-checked={category === c.id}
               onClick={() => pick(c)}
             >
-              {c.label}
+              {t(c.label)}
             </button>
           ))}
         </div>
@@ -80,14 +82,14 @@ export function AskPage() {
         )}
         {category && categoryInfo(category).caution && (
           <p className="small muted" role="status">
-            {categoryInfo(category).caution}
+            {t(categoryInfo(category).caution!)}
           </p>
         )}
       </div>
 
       <form className="stack" onSubmit={submit} noValidate>
         <label htmlFor="question" className="visually-hidden">
-          问题
+          {t('问题')}
         </label>
         <textarea
           id="question"
@@ -96,7 +98,7 @@ export function AskPage() {
           rows={4}
           maxLength={MAX_LENGTH}
           value={question}
-          placeholder={category ? categoryInfo(category).hint : '例如：面对新的工作机会，我该如何抉择？'}
+          placeholder={t(category ? categoryInfo(category).hint : '例如：面对新的工作机会，我该如何抉择？')}
           aria-invalid={error?.field === 'question'}
           aria-describedby="question-hint"
           onChange={(e) => {
@@ -110,7 +112,7 @@ export function AskPage() {
               {error.message}
             </span>
           ) : closed ? (
-            '这像一道是非题。试着改成「我该如何……」，读卦时会更有收获。'
+            t('这像一道是非题。试着改成「我该如何……」，读卦时会更有收获。')
           ) : (
             <span className="muted">
               {[...question].length}/{MAX_LENGTH}
@@ -118,12 +120,12 @@ export function AskPage() {
           )}
         </p>
         <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
-          确认问题
+          {t('确认问题')}
         </button>
         <p className="small muted center">
-          解读按你选的方向来写。这句话只存给你自己看，七日回访时用来对照。
+          {t('解读按你选的方向来写。这句话只存给你自己看，七日回访时用来对照。')}
           <br />
-          确认后问题锁定，这一卦不能再改。
+          {t('确认后问题锁定，这一卦不能再改。')}
         </p>
       </form>
     </Screen>

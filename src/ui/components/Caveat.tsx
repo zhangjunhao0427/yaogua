@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { t } from '../../i18n';
 
 /**
  * 解读页末尾的提醒。卦讲的是姿态，不是诊断，
@@ -7,10 +8,10 @@ import { Link } from 'react-router-dom';
 export function Caveat() {
   return (
     <p className="small muted center caveat">
-      卦是用来照见自己的，不替代医疗、法律或财务上的专业判断。身体不适请就医。
+      {t('卦是用来照见自己的，不替代医疗、法律或财务上的专业判断。身体不适请就医。')}
       <br />
       <Link className="link" to="/about">
-        起卦说明
+        {t('起卦说明')}
       </Link>
     </p>
   );

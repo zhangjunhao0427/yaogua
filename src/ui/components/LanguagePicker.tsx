@@ -1,5 +1,5 @@
 import { AVAILABLE_LANGS, LANG_LABEL } from '../../i18n';
-import { useLang } from '../../i18n/provider';
+import { useLang } from '../../i18n/context';
 import { cls } from '../cls';
 
 /**

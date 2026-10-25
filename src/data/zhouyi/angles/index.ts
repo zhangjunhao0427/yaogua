@@ -1,5 +1,4 @@
 import { sixOf } from '../../../core/hexagram';
-import { ANGLE_CATEGORY_IDS, type Category } from '../../guide';
 import { MORE_1 } from './more1';
 import { MORE_2 } from './more2';
 import { MORE_3 } from './more3';
@@ -29,8 +28,3 @@ function merge(base: HexagramAngles, more: HexagramAngles): MergedAngles {
 
 /** 中文落点，按文王卦序排列，每条经文八列，列序与 ANGLE_CATEGORY_IDS 一致 */
 export const ZH_ANGLES: readonly MergedAngles[] = BASE.map((base, i) => merge(base, MORE[i]));
-
-/** 「其他」没有落点，返回 -1 */
-export function angleIndex(category: Category): number {
-  return ANGLE_CATEGORY_IDS.indexOf(category as never);
-}

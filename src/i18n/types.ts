@@ -33,6 +33,10 @@ export interface TextPack {
   readonly hexagramFullNames: readonly string[];
   /** 六十四卦经文 */
   readonly zhouyi: readonly HexagramText[];
-  /** 六十四卦在八个提问方向上的落点 */
-  readonly angles: readonly MergedAngles[];
+  /**
+   * 六十四卦在八个提问方向上的落点。
+   * 这是每种语言里最大的一块（三千六百条），允许先缺着：
+   * 缺了就只给通用白话，和选「其他」时一样，界面不会空。
+   */
+  readonly angles?: readonly MergedAngles[];
 }

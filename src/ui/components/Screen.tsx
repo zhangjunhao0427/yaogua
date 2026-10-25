@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '../../i18n';
 import { cls } from '../cls';
 
 interface ScreenProps {
@@ -15,7 +16,7 @@ export function Screen({ title, back = '/', className, children }: ScreenProps) 
     <div className={cls('screen', className)}>
       {title !== undefined && (
         <header className="topbar">
-          <Link to={back} className="topbar__back" aria-label="返回">
+          <Link to={back} className="topbar__back" aria-label={t('返回')}>
             ‹
           </Link>
           <h1 className="topbar__title">{title}</h1>

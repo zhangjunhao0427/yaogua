@@ -3,6 +3,7 @@
  * 所以要能导出成一个文件带走，也要能从文件读回来。
  */
 import { meihuaStore, type MeihuaRecord } from './meihua';
+import { t } from '../i18n';
 import { recordStore, type CastRecord } from './records';
 
 /** 备份文件的格式版本。改动结构时必须加一，并在 readBackup 里兼容旧版 */
@@ -52,14 +53,14 @@ export function readBackup(text: string): Backup {
   try {
     parsed = JSON.parse(text);
   } catch {
-    throw new Error('这个文件不是摇卦的备份，打不开。');
+    throw new Error(t('这个文件不是摇卦的备份，打不开。'));
   }
   if (!isObject(parsed) || parsed.app !== 'yaogua') {
-    throw new Error('这个文件不是摇卦的备份。');
+    throw new Error(t('这个文件不是摇卦的备份。'));
   }
   const version = typeof parsed.version === 'number' ? parsed.version : 0;
   if (version > BACKUP_VERSION) {
-    throw new Error('这份备份来自更新的版本，请先把应用更新到最新。');
+    throw new Error(t('这份备份来自更新的版本，请先把应用更新到最新。'));
   }
   return {
     app: 'yaogua',

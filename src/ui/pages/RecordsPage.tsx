@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '../../i18n';
 import { listEntries, removeEntry, type Entry } from '../../store/entries';
 import { cls } from '../cls';
 import { RecordItem } from '../components/RecordItem';
@@ -26,31 +27,31 @@ export function RecordsPage() {
     if (left.length === 0) setEditing(false);
   }
 
-  if (!entries) return <Screen title="卦记" back="/" />;
+  if (!entries) return <Screen title={t('卦记')} back="/" />;
 
   return (
-    <Screen title="卦记" back="/">
+    <Screen title={t('卦记')} back="/">
       {entries.length === 0 ? (
         <div className="empty">
-          <p className="muted">还没有卦记。</p>
+          <p className="muted">{t('还没有卦记。')}</p>
           <Link className="btn btn--primary" to="/">
-            起一卦
+            {t('起一卦')}
           </Link>
         </div>
       ) : (
         <>
           <div className="records__bar">
-            <span className="small muted">共 {entries.length} 卦，只保存在这台设备上。</span>
+            <span className="small muted">{t('共 {n} 卦，只保存在这台设备上。', { n: entries.length })}</span>
             <span className="records__actions">
               <Link className="btn btn--text btn--compact" to="/data">
-                备份
+                {t('备份')}
               </Link>
               <button
                 type="button"
                 className={cls('btn btn--text btn--compact', editing && 'is-active')}
                 onClick={() => setEditing((on) => !on)}
               >
-                {editing ? '完成' : '管理'}
+                {editing ? t('完成') : t('管理')}
               </button>
             </span>
           </div>
@@ -63,7 +64,7 @@ export function RecordsPage() {
               />
             ))}
           </ul>
-          {editing && <p className="small muted center">删掉的卦记找不回来，连同它的七日回访提醒一起撤销。</p>}
+          {editing && <p className="small muted center">{t('删掉的卦记找不回来，连同它的七日回访提醒一起撤销。')}</p>}
         </>
       )}
     </Screen>

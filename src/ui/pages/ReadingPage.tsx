@@ -4,6 +4,7 @@ import { aspectsOf, lineTitle } from '../../core/hexagram';
 import { judge } from '../../core/rules';
 import type { Cast, Hexagram } from '../../core/types';
 import { CATEGORIES, glossaryFor, perspective, reflectionPrompts, type PerspectiveKey } from '../../data/guide';
+import { t } from '../../i18n';
 import { hexagramFullName, hexagramName } from '../../i18n/names';
 import { hexagramText, resolveText, type ResolvedText } from '../../data/zhouyi';
 import { sharer } from '../../platform/share';
@@ -52,14 +53,14 @@ export function ReadingPage() {
     };
   }, [id]);
 
-  if (record === undefined) return <Screen title="解读" back="/records" />;
+  if (record === undefined) return <Screen title={t('解读')} back="/records" />;
   if (record === null) {
     return (
-      <Screen title="解读" back="/">
+      <Screen title={t('解读')} back="/">
         <div className="empty">
-          <p className="muted">找不到这一卦。</p>
+          <p className="muted">{t('找不到这一卦。')}</p>
           <Link className="btn" to="/">
-            回首页
+            {t('回首页')}
           </Link>
         </div>
       </Screen>
@@ -97,11 +98,11 @@ function Reading({
   const refFor = (n: number) => (n === depth ? newest : undefined);
 
   return (
-    <Screen title="解读" back="/records" className="reading">
+    <Screen title={t('解读')} back="/records" className="reading">
       <section className="card">
         <p className="eyebrow">
           {formatDateTime(record.createdAt)}
-          {category && ` · ${category.label}`}
+          {category && ` · ${t(category.label)}`}
         </p>
         <p className="question__text serif">「{record.question}」</p>
       </section>
@@ -112,7 +113,7 @@ function Reading({
           {cast.changed && (
             <>
               <span className="figures__arrow" aria-hidden="true">
-                之
+                {t('之')}
               </span>
               <Figure perspectiveKey="changed" hexagram={cast.changed} changing={[]} />
             </>
@@ -120,8 +121,10 @@ function Reading({
         </div>
         <p className="small muted center">
           {cast.changing.length > 0
-            ? `变爻：${cast.changing.map((i) => lineTitle(i, cast.base.yang[i])).join('、')}　○ 老阳　× 老阴`
-            : '六爻皆不变，没有之卦'}
+            ? t('变爻：{list}　○ 老阳　× 老阴', {
+                list: cast.changing.map((i) => t(lineTitle(i, cast.base.yang[i]))).join(t('、')),
+              })
+            : t('六爻皆不变，没有之卦')}
         </p>
         <Brief perspectiveKey="base" hexagram={cast.base} main />
         {cast.changed && <Brief perspectiveKey="changed" hexagram={cast.changed} />}
@@ -131,7 +134,7 @@ function Reading({
       {depth >= 2 && (
         <Layer n={2} sectionRef={refFor(2)}>
           <p className="verdict serif">{verdict.rule}</p>
-          <p className="small muted">依朱熹《易学启蒙》变占之法，按变爻个数决定读哪几句。</p>
+          <p className="small muted">{t('依朱熹《易学启蒙》变占之法，按变爻个数决定读哪几句。')}</p>
         </Layer>
       )}
 
@@ -146,13 +149,13 @@ function Reading({
                 <span>
                   {hexagramName(text.hexagram)} · {text.title}
                 </span>
-                {text.main && texts.length > 1 && <span className="badge badge--accent">为主</span>}
+                {text.main && texts.length > 1 && <span className="badge badge--accent">{t('为主')}</span>}
               </header>
               <p className="passage__original serif">{text.original}</p>
               <p className="passage__plain">{text.plain}</p>
               {text.angle && (
                 <p className="passage__angle">
-                  <span className="passage__angle-label">{category?.label}</span>
+                  <span className="passage__angle-label">{category && t(category.label)}</span>
                   {text.angle}
                 </p>
               )}
@@ -172,15 +175,15 @@ function Reading({
               <li key={prompt}>{prompt}</li>
             ))}
           </ol>
-          <p className="small muted">卦不替你决定，只提供一个重新看这件事的角度。</p>
+          <p className="small muted">{t('卦不替你决定，只提供一个重新看这件事的角度。')}</p>
         </Layer>
       )}
 
       {depth < LAYERS.length ? (
         <div className="stack">
-          <p className="small muted center">{NEXT_HINT[depth]}</p>
+          <p className="small muted center">{t(NEXT_HINT[depth])}</p>
           <button type="button" className="btn btn--primary btn--block" onClick={() => setDepth((d) => d + 1)}>
-            下一层：{LAYERS[depth]}
+            {t('下一层：{layer}', { layer: t(LAYERS[depth]) })}
           </button>
         </div>
       ) : (
@@ -189,7 +192,7 @@ function Reading({
           <div className="actions">
             <ShareButton record={record} cast={cast} main={main} />
             <Link className="btn btn--text" to="/">
-              回首页
+              {t('回首页')}
             </Link>
             <DeleteButton
               onDelete={async () => {
@@ -217,8 +220,8 @@ function Layer({
   return (
     <section ref={sectionRef} className="layer">
       <h2 className="layer__title">
-        <span className="layer__no serif">{NUMERALS[n - 1]}</span>
-        {LAYERS[n - 1]}
+        <span className="layer__no serif">{t(NUMERALS)[n - 1]}</span>
+        {t(LAYERS[n - 1])}
       </h2>
       {children}
     </section>
@@ -234,7 +237,7 @@ function Figure({
   hexagram: Hexagram;
   changing: readonly number[];
 }) {
-  const { label } = perspective(perspectiveKey);
+  const label = t(perspective(perspectiveKey).label);
   const name = hexagramFullName(hexagram.number);
   return (
     <figure className="figure">
@@ -257,10 +260,11 @@ function Brief({
 }) {
   const { label, role } = perspective(perspectiveKey);
   const { theme, summary } = hexagramText(hexagram.number);
+  
   return (
     <section className={cls('card brief', main && 'brief--main')}>
       <p className="eyebrow">
-        {label} · {role}
+        {t(label)} · {t(role)}
       </p>
       <p className="brief__name serif">
         {hexagramFullName(hexagram.number)}
@@ -282,16 +286,16 @@ function Aspects({ base }: { base: Hexagram }) {
 
   /** 这三个卦可能彼此相同，甚至与本卦相同，说明一句免得看着像出错 */
   function sameNote(key: PerspectiveKey, hexagram: Hexagram): string {
-    if (hexagram.number === base.number) return '　这一卦与本卦相同。';
+    if (hexagram.number === base.number) return t('　这一卦与本卦相同。');
     if (key === 'reversed' && hexagram.number === opposite.number) {
-      return '　这一卦与错卦相同：阴阳全翻与上下颠倒，在这一卦上得到的是同一个结果，八个卦有此性质。';
+      return t('　这一卦与错卦相同：阴阳全翻与上下颠倒，在这一卦上得到的是同一个结果，八个卦有此性质。');
     }
     return '';
   }
 
   return (
     <details className="aspects">
-      <summary>互卦 · 错卦 · 综卦：再换三个角度看</summary>
+      <summary>{t('互卦 · 错卦 · 综卦：再换三个角度看')}</summary>
       <ul className="aspects__list">
         {items.map(([key, hexagram]) => {
           const { label, role, meaning } = perspective(key);
@@ -300,15 +304,15 @@ function Aspects({ base }: { base: Hexagram }) {
               <HexagramFigure yang={hexagram.yang} size="sm" />
               <div className="aspect__body">
                 <p className="aspect__head">
-                  <strong>{label}</strong>
-                  <span className="muted"> · {role}</span>
+                  <strong>{t(label)}</strong>
+                  <span className="muted"> · {t(role)}</span>
                 </p>
                 <p className="aspect__name serif">
                   {hexagramFullName(hexagram.number)}
                   <span className="muted">　{hexagramText(hexagram.number).theme}</span>
                 </p>
                 <p className="small muted">
-                  {meaning}
+                  {t(meaning)}
                   {sameNote(key, hexagram)}
                 </p>
               </div>
@@ -325,12 +329,12 @@ function Glossary({ texts }: { texts: readonly ResolvedText[] }) {
   if (terms.length === 0) return null;
   return (
     <details className="glossary">
-      <summary>字词释义</summary>
+      <summary>{t('字词释义')}</summary>
       <dl className="terms">
         {terms.map(([term, meaning]) => (
           <Fragment key={term}>
             <dt className="serif">{term}</dt>
-            <dd>{meaning}</dd>
+            <dd>{t(meaning)}</dd>
           </Fragment>
         ))}
       </dl>
@@ -346,8 +350,8 @@ function ReviewSection({ record, onChange }: { record: CastRecord; onChange: (re
   if (record.review) {
     return (
       <section className="card review">
-        <p className="eyebrow">回访 · {formatDate(record.review.at)}</p>
-        <p className="review__outcome serif">{OUTCOME_LABEL[record.review.outcome]}</p>
+        <p className="eyebrow">{t('回访 · {date}', { date: formatDate(record.review.at) })}</p>
+        <p className="review__outcome serif">{t(OUTCOME_LABEL[record.review.outcome])}</p>
         {record.review.note && <p className="muted">{record.review.note}</p>}
       </section>
     );
@@ -356,8 +360,8 @@ function ReviewSection({ record, onChange }: { record: CastRecord; onChange: (re
   if (!isReviewDue(record)) {
     return (
       <section className="card review">
-        <p className="eyebrow">回访</p>
-        <p className="muted">{formatDate(reviewDueAt(record))}起回来记下：这一卦应验了吗？</p>
+        <p className="eyebrow">{t('回访')}</p>
+        <p className="muted">{t('{date}起回来记下：这一卦应验了吗？', { date: formatDate(reviewDueAt(record)) })}</p>
       </section>
     );
   }
@@ -372,9 +376,9 @@ function ReviewSection({ record, onChange }: { record: CastRecord; onChange: (re
 
   return (
     <section className="card review">
-      <p className="eyebrow">七日已过</p>
-      <p>这一卦，应验了吗？</p>
-      <div className="chips" role="group" aria-label="应验情况">
+      <p className="eyebrow">{t('七日已过')}</p>
+      <p>{t('这一卦，应验了吗？')}</p>
+      <div className="chips" role="group" aria-label={t('应验情况')}>
         {OUTCOMES.map((o) => (
           <button
             key={o}
@@ -383,12 +387,12 @@ function ReviewSection({ record, onChange }: { record: CastRecord; onChange: (re
             aria-pressed={outcome === o}
             onClick={() => setOutcome(o)}
           >
-            {OUTCOME_LABEL[o]}
+            {t(OUTCOME_LABEL[o])}
           </button>
         ))}
       </div>
       <label htmlFor="review-note" className="visually-hidden">
-        回访记录
+        {t('回访记录')}
       </label>
       <textarea
         id="review-note"
@@ -396,11 +400,11 @@ function ReviewSection({ record, onChange }: { record: CastRecord; onChange: (re
         rows={3}
         maxLength={500}
         value={note}
-        placeholder="后来发生了什么？（可不填）"
+        placeholder={t('后来发生了什么？（可不填）')}
         onChange={(e) => setNote(e.target.value)}
       />
       <button type="button" className="btn btn--primary btn--block" disabled={!outcome || saving} onClick={() => void save()}>
-        记下
+        {t('记下')}
       </button>
     </section>
   );
@@ -437,10 +441,13 @@ function ShareButton({ record, cast, main }: { record: CastRecord; cast: Cast; m
           plain: main.angle ?? main.plain,
         },
       });
-      const result = await sharer.shareImage(blob, '摇卦.png', { title: '摇卦', text: `「${record.question}」` });
+      const result = await sharer.shareImage(blob, 'yaogua.png', {
+        title: t('摇卦'),
+        text: `「${record.question}」`,
+      });
       if (result === 'unsupported' || result === 'failed') setPreview(URL.createObjectURL(blob));
     } catch {
-      setError('卡片生成失败，稍后再试');
+      setError(t('卡片生成失败，稍后再试'));
     } finally {
       setBusy(false);
     }
@@ -449,7 +456,7 @@ function ShareButton({ record, cast, main }: { record: CastRecord; cast: Cast; m
   return (
     <>
       <button type="button" className="btn btn--block" disabled={busy} onClick={() => void share()}>
-        {busy ? '生成中…' : '生成分享卡片'}
+        {busy ? t('生成中…') : t('生成分享卡片')}
       </button>
       {error && (
         <p className="error small center" role="alert">
@@ -457,14 +464,14 @@ function ShareButton({ record, cast, main }: { record: CastRecord; cast: Cast; m
         </p>
       )}
       {preview && (
-        <div className="sheet" role="dialog" aria-modal="true" aria-label="分享卡片">
-          <img src={preview} alt="分享卡片预览" />
-          <p className="small">长按图片可保存</p>
-          <a className="btn" href={preview} download="摇卦.png">
-            下载图片
+        <div className="sheet" role="dialog" aria-modal="true" aria-label={t('分享卡片')}>
+          <img src={preview} alt={t('分享卡片预览')} />
+          <p className="small">{t('长按图片可保存')}</p>
+          <a className="btn" href={preview} download="yaogua.png">
+            {t('下载图片')}
           </a>
           <button type="button" className="btn btn--text" onClick={() => setPreview(null)}>
-            关闭
+            {t('关闭')}
           </button>
         </div>
       )}
