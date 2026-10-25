@@ -31,6 +31,10 @@ export interface TextPack {
   readonly hexagramNames: readonly string[];
   /** 六十四卦全称，如「地天泰」 */
   readonly hexagramFullNames: readonly string[];
+  /** 天干十个，缺省用中文的甲乙丙丁 */
+  readonly stems?: readonly string[];
+  /** 地支十二个，缺省用中文的子丑寅卯 */
+  readonly branches?: readonly string[];
   /** 六十四卦经文 */
   readonly zhouyi: readonly HexagramText[];
   /**

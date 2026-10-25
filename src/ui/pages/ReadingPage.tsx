@@ -104,7 +104,7 @@ function Reading({
           {formatDateTime(record.createdAt)}
           {category && ` · ${t(category.label)}`}
         </p>
-        <p className="question__text serif">「{record.question}」</p>
+        <p className="question__text serif">{t('「{q}」', { q: record.question })}</p>
       </section>
 
       <Layer n={1} sectionRef={refFor(1)}>

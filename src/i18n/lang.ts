@@ -26,7 +26,7 @@ export const LANG_TAG: Record<Lang, string> = {
  * 一种语言只有在经文与落点都译全（见 i18n 的完整性测试）之后才加进来，
  * 不能让用户选到一个中英混杂的版本。
  */
-export const AVAILABLE_LANGS: readonly Lang[] = ['zh'];
+export const AVAILABLE_LANGS: readonly Lang[] = ['zh', 'en'];
 
 export function isLang(value: unknown): value is Lang {
   return typeof value === 'string' && (ALL_LANGS as readonly string[]).includes(value);

@@ -34,7 +34,7 @@ export function HomePage() {
             <Link className="btn btn--primary btn--block" to="/cast">
               {t('继续摇卦 · 已得 {n} 爻', { n: draft.lines.length })}
             </Link>
-            <p className="small muted center">「{draft.question}」</p>
+            <p className="small muted center">{t('「{q}」', { q: draft.question })}</p>
           </div>
         ) : (
           <div className="stack">

@@ -5,7 +5,7 @@ import { ANGLE_CATEGORY_IDS } from '../data/guide';
 import { HEXAGRAM_COUNT } from '../data/hexagrams';
 import { loadPack, t } from './index';
 import { ALL_LANGS, AVAILABLE_LANGS } from './lang';
-import { collectKeys, TRIGRAMS } from './scan';
+import { collectKeys, EXTRA_PARAMS, TRIGRAMS } from './scan';
 import type { TextPack } from './types';
 
 const KEYS = collectKeys();
@@ -53,13 +53,16 @@ describe.each(translated)('%s 的文字包', (lang) => {
     expect(bad, `有 ${bad.length} 条没译，例如：${bad.slice(0, 5).join(' / ')}`).toEqual([]);
   });
 
-  it('占位符一个不漏，也不多出来', async () => {
+  it('译文用到的占位符，调用处都传得出来', async () => {
     p = await loadPack(lang);
-    const holes = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
+    const holes = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
     for (const key of KEYS) {
       const value = p.phrases[key];
       if (!value) continue;
-      expect(holes(value), `「${key}」的占位符对不上`).toEqual(holes(key));
+      // 译文可以不用某个占位符（语序不同），但不能用一个没人传的
+      const allowed = new Set([...holes(key), ...(EXTRA_PARAMS[key] ?? [])]);
+      const unknown = holes(value).filter((h) => !allowed.has(h));
+      expect(unknown, `「${key}」的译文用了传不进来的占位符`).toEqual([]);
     }
   });
 

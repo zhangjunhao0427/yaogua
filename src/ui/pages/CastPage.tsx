@@ -204,7 +204,7 @@ export function CastPage() {
 
   return (
     <Screen title={t('摇卦')} back="/" className="cast">
-      <p className="cast__question serif">「{draft.question}」</p>
+      <p className="cast__question serif">{t('「{q}」', { q: draft.question })}</p>
 
       <div className="cast__figure">
         <HexagramFigure yang={yang} changing={changing} size="lg" slots animateLast label={t('已得 {n} 爻', { n: shown })} />

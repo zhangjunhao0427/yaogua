@@ -59,5 +59,13 @@ export function collectKeys(): string[] {
   return [...new Set([...fromSource(), ...fromData()])];
 }
 
+/**
+ * 有些地方传给 t() 的参数比中文键里用到的多，好让各语言各取所需。
+ * 农历就是这样：中文用「九月十五」，英文用数字。
+ */
+export const EXTRA_PARAMS: Readonly<Record<string, readonly string[]>> = {
+  '{stem}{branch}年{leap}{monthName}月{dayName} {hourName}时': ['month', 'day', 'hour'],
+};
+
 /** 卦名、经文等按语言分包的内容不走这里；这些是 TextPack 的字段，由类型与测试保证完整 */
 export const TRIGRAMS: readonly TrigramName[] = Object.keys(TRIGRAM_LORE) as TrigramName[];

@@ -73,7 +73,7 @@ function Reading({ record, onChange }: { record: MeihuaRecord; onChange: (record
           {category && ` · ${t(category.label)}`}
           {record.source === 'time' ? ` · ${t('时间起卦')}` : ` · ${t('数字起卦')}`}
         </p>
-        <p className="question__text serif">「{record.question}」</p>
+        <p className="question__text serif">{t('「{q}」', { q: record.question })}</p>
         <p className="small muted">
           {record.source === 'time' && record.lunar ? (
             <>

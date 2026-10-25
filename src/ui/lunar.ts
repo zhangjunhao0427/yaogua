@@ -1,4 +1,4 @@
-import { t } from '../i18n';
+import { pack, t } from '../i18n';
 /**
  * 农历换算，用系统自带的中国历（ICU），不自己维护农历表。
  * 梅花时间起卦要的是农历年支、月、日与时辰地支。
@@ -48,9 +48,9 @@ function chineseParts(date: Date): ChineseParts {
 }
 
 /** 公历年推农历年的干支。1984 年为甲子 */
-function stemBranchOfYear(year: number): { stem: string; branchIndex: number } {
-  const offset = ((year - 1984) % 60 + 60) % 60;
-  return { stem: HEAVENLY_STEMS[offset % 10], branchIndex: offset % 12 };
+function stemBranchOfYear(year: number): { stem: string; stemIndex: number; branchIndex: number } {
+  const offset = (((year - 1984) % 60) + 60) % 60;
+  return { stem: HEAVENLY_STEMS[offset % 10], stemIndex: offset % 10, branchIndex: offset % 12 };
 }
 
 export function lunarOf(date: Date): LunarDate {
@@ -61,7 +61,7 @@ export function lunarOf(date: Date): LunarDate {
   const monthIndex = MONTHS.findIndex((m) => monthName.startsWith(m));
   const month = monthIndex >= 0 ? monthIndex + 1 : Number(monthName.replace(/[^0-9]/g, '')) || 1;
 
-  const { stem, branchIndex } = stemBranchOfYear(parts.year);
+  const { stem, stemIndex, branchIndex } = stemBranchOfYear(parts.year);
   // 中文区的 format 会带上「时」字，取 parts 才拿得到纯数字；h23 保证是 0–23
   const hourText = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
@@ -80,15 +80,15 @@ export function lunarOf(date: Date): LunarDate {
     leapMonth,
     // 各语言的模板各取所需：中文用干支与「正月初五」，其余语言可以只用数字
     label: t('{stem}{branch}年{leap}{monthName}月{dayName} {hourName}时', {
-      stem,
-      branch: EARTHLY_BRANCHES[branchIndex],
+      stem: pack().stems?.[stemIndex] ?? stem,
+      branch: pack().branches?.[branchIndex] ?? EARTHLY_BRANCHES[branchIndex],
       leap: leapMonth ? t('闰') : '',
       month,
       monthName: MONTHS[month - 1],
       day: parts.day,
       dayName: dayLabel(parts.day),
       hour: hourBranch,
-      hourName: EARTHLY_BRANCHES[hourBranch - 1],
+      hourName: pack().branches?.[hourBranch - 1] ?? EARTHLY_BRANCHES[hourBranch - 1],
     }),
   };
 }

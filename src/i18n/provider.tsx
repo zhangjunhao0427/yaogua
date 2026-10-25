@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { settingsStore } from '../store/settings';
 import { LangContext } from './context';
 import { activateLang, currentLang } from './index';
@@ -45,5 +45,11 @@ export function LangProvider({ children }: { children: ReactNode }) {
   // 读偏好只是一次本地读取，很快；期间先不渲染，免得中文闪一下再跳成外文
   if (!ready) return null;
 
-  return <LangContext value={{ lang, change }}>{children}</LangContext>;
+  // 组件里直接调 t()，不订阅语言，所以换语言时要靠 key 把整棵树重挂一次，
+  // 否则 React 看到 children 还是同一个元素就跳过渲染，界面不会变。
+  return (
+    <LangContext value={{ lang, change }}>
+      <Fragment key={lang}>{children}</Fragment>
+    </LangContext>
+  );
 }

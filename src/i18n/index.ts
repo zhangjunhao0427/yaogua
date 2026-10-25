@@ -14,7 +14,9 @@ export type { TextPack } from './types';
 export { ALL_LANGS, AVAILABLE_LANGS, detectLang, isLang, LANG_LABEL, LANG_TAG } from './lang';
 
 /** 译完一种加一条；没有加载器的语言不会出现在 AVAILABLE_LANGS 里 */
-const LOADERS: Partial<Record<Lang, () => Promise<{ pack: TextPack }>>> = {};
+const LOADERS: Partial<Record<Lang, () => Promise<{ pack: TextPack }>>> = {
+  en: () => import('./packs/en'),
+};
 
 const loaded = new Map<Lang, TextPack>([['zh', zhPack]]);
 

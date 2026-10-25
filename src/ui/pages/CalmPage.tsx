@@ -31,7 +31,7 @@ export function CalmPage() {
       <p className="calm__cue serif" aria-live="polite">
         {left > 1 ? t('吸气') : t('呼气')}
       </p>
-      {draft && <p className="calm__question serif">「{draft.question}」</p>}
+      {draft && <p className="calm__question serif">{t('「{q}」', { q: draft.question })}</p>}
       <p className="small muted">{t('放下手边的事，把心思放回这个问题上。')}</p>
       <button type="button" className="btn btn--text" onClick={() => navigate('/cast', { replace: true })}>
         {t('跳过')}
