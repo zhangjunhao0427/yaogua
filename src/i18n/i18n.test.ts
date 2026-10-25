@@ -124,6 +124,7 @@ describe.each(translated)('%s 的文字包', (lang) => {
       });
     });
   });
+});
 
 describe('没译完的语言', () => {
   it('不会出现在可选语言里', () => {
