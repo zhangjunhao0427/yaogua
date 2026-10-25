@@ -4,7 +4,7 @@ import { lineTitle } from '../../core/hexagram';
 import { ELEMENT_OF, NUMBER_BY_TRIGRAM, type MeihuaCast } from '../../core/meihua';
 import type { Hexagram } from '../../core/types';
 import { categoryInfo } from '../../data/guide';
-import { hexagramFullName, hexagramName } from '../../data/hexagrams';
+import { hexagramFullName, hexagramName } from '../../i18n/names';
 import { RELATION_LORE, STAGE_LORE, TRIGRAM_LORE } from '../../data/meihua';
 import { hexagramText, resolveText } from '../../data/zhouyi';
 import {

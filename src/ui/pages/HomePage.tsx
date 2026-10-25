@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { entryDue, entryHref, listEntries } from '../../store/entries';
 import { recordStore } from '../../store/records';
 import { HexagramFigure } from '../components/HexagramFigure';
+import { LanguagePicker } from '../components/LanguagePicker';
 import { RecordItem } from '../components/RecordItem';
 import { Screen } from '../components/Screen';
 import { useLoad } from '../hooks';
@@ -68,6 +69,8 @@ export function HomePage() {
         <Link to="/records">全部卦记</Link>
         <Link to="/about">起卦说明</Link>
       </nav>
+
+      <LanguagePicker />
     </Screen>
   );
 }

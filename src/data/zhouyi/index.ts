@@ -1,17 +1,11 @@
 import { hexagramByNumber } from '../../core/hexagram';
 import type { TextRef } from '../../core/types';
+import { pack } from '../../i18n';
 import type { Category } from '../guide';
-import { angleIndex, anglesOf } from './angles';
-import { PART_1 } from './part1';
-import { PART_2 } from './part2';
-import { PART_3 } from './part3';
-import { PART_4 } from './part4';
+import { angleIndex, type MergedAngles } from './angles';
 import type { HexagramText } from './types';
 
 export type { HexagramText, LinePassage, Passage } from './types';
-
-/** 按文王卦序排列，下标 0 为第 1 卦 */
-export const ZHOUYI: readonly HexagramText[] = [...PART_1, ...PART_2, ...PART_3, ...PART_4];
 
 export interface ResolvedText {
   readonly hexagram: number;
@@ -23,8 +17,14 @@ export interface ResolvedText {
   readonly angle: string | null;
 }
 
+/** 当前语言的经文 */
 export function hexagramText(n: number): HexagramText {
-  return ZHOUYI[hexagramByNumber(n).number - 1];
+  return pack().zhouyi[hexagramByNumber(n).number - 1];
+}
+
+/** 当前语言的分类落点 */
+export function anglesOf(n: number): MergedAngles {
+  return pack().angles[hexagramByNumber(n).number - 1];
 }
 
 /** 「其他」没有对应的列，退回 null，由界面只显示通用白话 */

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { HEXAGRAM_COUNT, hexagramFullName, hexagramName } from './hexagrams';
+import { HEXAGRAM_COUNT } from './hexagrams';
+import { hexagramFullName, hexagramName } from '../i18n/names';
 
 describe('卦名', () => {
   it('64 个卦名互不重复', () => {

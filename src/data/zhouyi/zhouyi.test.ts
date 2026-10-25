@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { castFromValues, hexagramByNumber, lineTitle, sixOf } from '../../core/hexagram';
 import { judge } from '../../core/rules';
 import type { LineValue } from '../../core/types';
-import { resolveText, ZHOUYI } from './index';
+import { resolveText } from './index';
+import { ZH_ZHOUYI as ZHOUYI } from './scripture';
 
 const allPassages = ZHOUYI.flatMap((h) => [
   { original: h.judgment[0], plain: h.judgment[1] },

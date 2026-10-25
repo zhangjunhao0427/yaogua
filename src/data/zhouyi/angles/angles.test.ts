@@ -3,8 +3,9 @@ import { castFromValues, sixOf } from '../../../core/hexagram';
 import { judge } from '../../../core/rules';
 import type { LineValue } from '../../../core/types';
 import { ANGLE_CATEGORY_IDS, CATEGORIES } from '../../guide';
-import { resolveText, ZHOUYI } from '../index';
-import { ANGLES } from './index';
+import { resolveText } from '../index';
+import { ZH_ZHOUYI as ZHOUYI } from '../scripture';
+import { ZH_ANGLES as ANGLES } from './index';
 
 const COLUMNS = ANGLE_CATEGORY_IDS.length;
 const everyAngles = ANGLES.flatMap((h) => [h.judgment, ...h.lines, ...(h.extra ? [h.extra] : [])]);

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { hexagramName } from '../../data/hexagrams';
+import { hexagramName } from '../../i18n/names';
 import { entryDue, entryFigure, entryHexagrams, entryHref, type Entry } from '../../store/entries';
 import { OUTCOME_LABEL } from '../../store/records';
 import { cls } from '../cls';

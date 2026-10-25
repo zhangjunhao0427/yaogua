@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { castLine, isChanging, isYang, LINE_NAME } from '../../core/coin';
 import { lineTitle } from '../../core/hexagram';
 import type { Line, LineIndex, Toss } from '../../core/types';
-import { hexagramFullName } from '../../data/hexagrams';
+import { hexagramFullName } from '../../i18n/names';
 import { haptics } from '../../platform/haptics';
 import { motion } from '../../platform/motion';
 import { castOf, recordStore, type CastRecord, type Draft } from '../../store/records';

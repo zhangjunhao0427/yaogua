@@ -4,7 +4,7 @@ import { aspectsOf, lineTitle } from '../../core/hexagram';
 import { judge } from '../../core/rules';
 import type { Cast, Hexagram } from '../../core/types';
 import { CATEGORIES, glossaryFor, perspective, reflectionPrompts, type PerspectiveKey } from '../../data/guide';
-import { hexagramFullName, hexagramName } from '../../data/hexagrams';
+import { hexagramFullName, hexagramName } from '../../i18n/names';
 import { hexagramText, resolveText, type ResolvedText } from '../../data/zhouyi';
 import { sharer } from '../../platform/share';
 import {

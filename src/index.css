@@ -1129,3 +1129,24 @@ a {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* 语言切换 */
+.langs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin-top: 22px;
+}
+.langs__item {
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.langs__item.is-active {
+  color: var(--copper);
+}
